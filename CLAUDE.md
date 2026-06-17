@@ -44,16 +44,17 @@ Audio feature similarity                   Lyric SBERT cosine similarity
 - Output: N clusters with human-readable mood labels (assigned manually or via centroid inspection)
 - Why: constrains retrieval to emotionally coherent neighborhoods, reduces noise from full-corpus audio search
 
-### Stage 2 — Mood Query Projection
-- Input: SBERT embedding of user's natural language mood
-- Method: learned linear projection (or MLP) mapping SBERT space → audio feature space
-- Training signal: mood tag labels on songs, or manually labeled cluster centroids as anchor pairs
-- Output: a point in audio feature space → find nearest cluster
+### Stage 2 — Lyric Embedding
+- Input: lyrics text per song
+- Method: bge-m3 SBERT embeddings of all lyrics (run on GPU), build FAISS index
+- Output: 955k × 1024 embedding matrix + FAISS index for cosine similarity search
+- Note: must run before Stage 3 — projection layer training uses these embeddings as input
 
-### Stage 3 — Lyric Semantic Retrieval
-- Input: SBERT embedding of user's mood query + precomputed SBERT embeddings of all lyrics
-- Method: FAISS cosine similarity search within the candidate pool from Stage 1
-- Output: songs ranked by lyric semantic match to the mood description
+### Stage 3 — Mood Query Projection
+- Input: lyric SBERT embeddings (from Stage 2) + audio features per song
+- Method: learned linear projection (1024 → 5) trained on (SBERT(lyrics), audio_features) pairs
+- Output: projection layer that maps any SBERT embedding → 5-dim audio space → nearest cluster
+- Why lyrics not manual pairs: 955k training pairs vs ~50 manual ones, no domain mismatch risk
 
 ### Stage 4 — Fusion & Ranking
 - Weighted combination: `score = α * audio_sim + (1-α) * lyric_sim`
@@ -74,8 +75,8 @@ Audio feature similarity                   Lyric SBERT cosine similarity
 ## Milestones
 1. [ ] Dataset acquired and columns inspected
 2. [ ] Audio features normalized, emotional clusters built and labeled
-3. [ ] Lyrics embedded with SBERT, FAISS index built
-4. [ ] Mood→audio projection trained (even if simple/linear)
+3. [ ] Lyrics embedded with bge-m3 on GPU, FAISS index built
+4. [ ] Mood→audio projection trained on (SBERT(lyrics), audio_features) pairs
 5. [ ] End-to-end query → cluster filter → lyric rerank working
 6. [ ] Qualitative evaluation + fusion weight tuning
 7. [ ] Demo interface (CLI or Gradio)
@@ -134,7 +135,7 @@ SBERT is used twice:
 
   projection layer is what connects SBERT to the clusters
 
-  Projection layer = learned linear map from SBERT's 768-dim text vector → 5-dim audio feature space (like PCA but trained, not variance-based), so user input can be
+  Projection layer = learned linear map from SBERT's 1024-dim text vector → 5-dim audio feature space (like PCA but trained, not variance-based), so user input can be
   compared to clusters.
 
   Regarding the learned linear map We're making our own. You train it on pairs of (mood text, target audio features) — e.g. a song tagged "happy" should map close to the centroid of the
