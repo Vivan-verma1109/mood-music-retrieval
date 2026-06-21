@@ -42,3 +42,31 @@ sample = embeddings[:5]
 projected = proj.predict(sample)
 print("\nProjected (first 5 songs):", projected)
 print("Cluster centroids:", kmeans.cluster_centers_)
+
+
+#
+# Projected (first 5 songs): 
+# [[0.57243264 0.5894907  0.4875736  0.3049435  0.6304374 ]
+# [0.48119685 0.7050117  0.51037467 0.1599997  0.58902717]
+# [0.58246636 0.6863107  0.48709515 0.33226663 0.5352617 ]
+# [0.57557184 0.67905056 0.5222948  0.33552605 0.59170943]
+# [0.57557184 0.67905056 0.5222948  0.33552605 0.59170943]]
+
+
+# Cluster centroids:
+# [[0.31834384 0.88158994 0.53521369 0.02624341 0.41188698]
+# [0.32282001 0.55132163 0.47843726 0.18737258 0.58193304]
+# [0.28902274 0.29861373 0.4588708  0.79446589 0.47017999]
+# [0.73303203 0.77351461 0.50331367 0.10270728 0.65654264]
+# [0.71021773 0.5785708  0.48770265 0.59656975 0.64244961]]
+
+# Projection layer trained and saved
+# R² valence: 0.2134
+# R² energy: 0.2033
+# R² tempo: 0.0135
+# R² acousticness: 0.1990
+# R² danceability: 0.2494
+
+#  Let's test the end-to-end pipeline first. If the results feel right qualitatively then 0.2 R² is fine in practice. If they feel off, we swap to MLP.
+                                                                                                                                                                                                                                                   
+#  No point optimizing blindly before we know if it's actually broken
