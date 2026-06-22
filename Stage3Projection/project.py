@@ -1,3 +1,9 @@
+# NOT USED IN CURRENT PIPELINE
+# Trained Ridge regression (768 -> 5) to map SBERT embeddings into audio feature space.
+# Dropped: R² ~0.2 caused wrong cluster routing ("melancholic" → Angry/Intense).
+# Replaced by lyric-space centroid cosine similarity in fusion.py.
+# Kept here for reference — revisit with MLP if projection is needed later.
+
 import numpy as np
 import pandas as pd
 import joblib

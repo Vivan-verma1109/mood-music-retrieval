@@ -6,7 +6,10 @@ df = pd.read_csv('archive/songs_clustered.csv')
 embeddings = np.load('archive/lyrics_embeddings.npy').astype('float32')
 
 # case-insensitive dedup on name + artists
-df_lower = df[['name', 'artists']].apply(lambda col: col.str.lower().str.strip())
+def lowercase_and_strip(col):
+    return col.str.lower().str.strip()
+
+df_lower = df[['name', 'artists']].apply(lowercase_and_strip)
 
 # a True/False array the same length as the dataframe. True = keep this row, False = it's a duplicate. So df[keep_mask] gives you only the rows marked True.
 # keep_mask ends up as: True for the first time a song appears, False for every repeat.

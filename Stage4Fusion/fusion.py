@@ -5,6 +5,7 @@ import requests
 import os
 from dotenv import load_dotenv
 from sentence_transformers import SentenceTransformer
+from config import cluster_tags
 
 load_dotenv()
 LASTFM_KEY = os.environ['LASTFM_API_KEY']
@@ -16,12 +17,21 @@ model = SentenceTransformer('paraphrase-multilingual-mpnet-base-v2')
 
 # --- cluster centroids in lyric space ---
 cluster_ids = sorted(df['cluster'].unique())
-cluster_centroids = np.array([
-    embeddings[df[df['cluster'] == c].index.to_numpy()].mean(axis=0)
-    for c in cluster_ids
-]).astype('float32')
-cluster_centroids /= np.linalg.norm(cluster_centroids, axis=1, keepdims=True) + 1e-8
 
+centroids = []
+# every song that belongs to cluster c, then pull their embeddings.
+# Average those embeddings together and you get one vector that represents the "typical" lyric meaning of songs in that cluster. That's the centroid.
+for c in cluster_ids:
+    rows_in_cluster = df[df['cluster'] == c]        # get all rows in cluster c
+    row_numbers = rows_in_cluster.index.to_numpy()  # get their row numbers as an array
+    cluster_embeddings = embeddings[row_numbers]     # pull their 768-dim vectors from the matrix
+    centroid = cluster_embeddings.mean(axis=0)       # average all those vectors into one 768-dim centroid
+    centroids.append(centroid)
+
+cluster_centroids = np.array(centroids).astype('float32')
+cluster_centroids /= np.linalg.norm(cluster_centroids, axis=1, keepdims=True) + 1e-8  # normalize to length 1 so cosine sim works correctly
+
+# popularity signal
 def get_listeners(artist, track):
     try:
         r = requests.get('https://ws.audioscrobbler.com/2.0/', params={
@@ -35,10 +45,26 @@ def get_listeners(artist, track):
     except:
         return 0
 
-def query(mood_text, top_k=10, pop_candidates=50):
-    # embed query and find nearest cluster
+def find_cluster_by_tags(mood_text):
+    query_lower = mood_text.lower()
+    hit_counts = {}
+    for cluster_id, tags in cluster_tags.items():
+        hits = sum(1 for tag in tags if tag in query_lower)
+        if hits > 0:
+            hit_counts[cluster_id] = hits
+    if not hit_counts:
+        return None
+    return max(hit_counts, key=hit_counts.get)
+
+def query(mood_text, top_k = 10, pop_candidates = 50):
+
+    # embed query
     query_emb = model.encode([mood_text], normalize_embeddings=True).astype('float32')
-    cluster_id = int(cluster_ids[np.argmax(cluster_centroids @ query_emb.T)])
+
+    # try tag matching first, fall back to lyric centroid routing
+    cluster_id = find_cluster_by_tags(mood_text)
+    if cluster_id is None:
+        cluster_id = int(cluster_ids[np.argmax(cluster_centroids @ query_emb.T)])
     print(f"Nearest cluster: {cluster_id} — {df[df['cluster'] == cluster_id]['mood'].iloc[0]}")
 
     # score candidates by lyric cosine similarity
@@ -60,7 +86,7 @@ def query(mood_text, top_k=10, pop_candidates=50):
     listeners = np.where(listeners == 0, median_l, listeners)
     listeners_norm = listeners / listeners.max()
 
-    final_score = pool_scores * (1 + 0.3 * listeners_norm)
+    final_score = pool_scores * (1 + 0.5 * listeners_norm)
     top_local = np.argsort(final_score)[::-1][:top_k]
     top_global = pool_idx[top_local]
 
@@ -71,7 +97,7 @@ def query(mood_text, top_k=10, pop_candidates=50):
 
 
 if __name__ == '__main__':
-    query_text = "I'm feeling melancholic and introspective"
+    query_text = "Im feeling Moody Mid-Tempo"
     print(f"\nQuery: {query_text}\n")
     results = query(query_text, top_k=10)
     print(results.to_string(index=False))
