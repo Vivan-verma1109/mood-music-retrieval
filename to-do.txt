@@ -1,0 +1,33 @@
+FUTURE IMPROVEMENTS
+===================
+
+Genre filtering
+- tag songs via Last.fm track.getTopTags (free, no auth)
+- detect genre keywords in query ("rap", "jazz", "hindi") and pre-filter candidates
+
+Language filtering
+- detect language per song (langdetect on lyrics, or Last.fm tags)
+- let user specify language preference in query
+
+Exclude user's liked songs
+- Spotify OAuth (Authorization Code flow) to get user's saved tracks
+- filter out already-liked songs from results so playlist is always fresh
+
+Expand cluster search
+- search top 2 nearest clusters instead of 1
+- better coverage for queries that sit on the border between moods
+
+Demo interface
+- Gradio or CLI with interactive query input
+- show album art, Spotify links
+
+Spotify playlist export
+- OAuth + POST /me/playlists + POST /playlists/{id}/items
+- create playlist directly from ranked results
+
+Filter by release year / era
+- e.g. "hype songs from the 2000s" → filter candidates to year range before scoring
+- dataset may not have release year — fetch via Last.fm track.getInfo or Spotify GET /tracks/{id}
+
+Learned fusion weights
+- small supervised layer to tune alpha if labeled mood->playlist data exists

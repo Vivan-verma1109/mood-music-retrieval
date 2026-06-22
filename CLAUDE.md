@@ -4,7 +4,7 @@
 Build a system that takes a natural language mood description ("I'm feeling melancholic and introspective")
 and returns a ranked playlist by combining three signals:
 1. **Acoustic features** — Spotify audio features (valence, energy, tempo, acousticness, danceability)
-2. **Emotional clusters** — songs grouped by valence + energy into emotional neighborhoods
+2. **Emotional clusters** — songs grouped by all 5 audio features (valence, energy, tempo, acousticness, danceability) into emotional neighborhoods
 3. **Lyrics semantics** — SBERT embeddings of song lyrics aligned with the mood query
 
 The core ML problems:
@@ -46,13 +46,13 @@ Audio feature similarity                   Lyric SBERT cosine similarity
 
 ### Stage 2 — Lyric Embedding
 - Input: lyrics text per song
-- Method: bge-m3 SBERT embeddings of all lyrics (run on GPU), build FAISS index
-- Output: 955k × 1024 embedding matrix + FAISS index for cosine similarity search
+- Method: paraphrase-multilingual-mpnet-base-v2 SBERT embeddings of all lyrics (run on GPU), build FAISS index
+- Output: 955k × 768 embedding matrix + FAISS index for cosine similarity search
 - Note: must run before Stage 3 — projection layer training uses these embeddings as input
 
 ### Stage 3 — Mood Query Projection
 - Input: lyric SBERT embeddings (from Stage 2) + audio features per song
-- Method: learned linear projection (1024 → 5) trained on (SBERT(lyrics), audio_features) pairs
+- Method: learned linear projection (768 → 5) trained on (SBERT(lyrics), audio_features) pairs
 - Output: projection layer that maps any SBERT embedding → 5-dim audio space → nearest cluster
 - Why lyrics not manual pairs: 955k training pairs vs ~50 manual ones, no domain mismatch risk
 
@@ -106,7 +106,7 @@ Audio feature similarity                   Lyric SBERT cosine similarity
   - danceability — how suitable for dancing (0 to 1)
 
 
-Only care about valence and energy for clistering. The other 3 are gonna be used in the audio similarity score later
+All 5 features (valence, energy, tempo, acousticness, danceability) are used for clustering. The doc previously said valence+energy only — that was wrong. The implementation uses all 5 and the resulting cluster labels (Quiet/Acoustic Sadness, Moody Mid-Tempo, etc.) are better for it.
 
 The clustering algorithm (KMeans or HDBSCAN) figures out the natural groupings from the data itself. You tell it how many
 clusters you want (e.g. 8), it finds where songs naturally clump together in that space, and you label each cluster after 
@@ -135,7 +135,7 @@ SBERT is used twice:
 
   projection layer is what connects SBERT to the clusters
 
-  Projection layer = learned linear map from SBERT's 1024-dim text vector → 5-dim audio feature space (like PCA but trained, not variance-based), so user input can be
+  Projection layer = learned linear map from SBERT's 768-dim text vector → 5-dim audio feature space (like PCA but trained, not variance-based), so user input can be
   compared to clusters.
 
   Regarding the learned linear map We're making our own. You train it on pairs of (mood text, target audio features) — e.g. a song tagged "happy" should map close to the centroid of the
