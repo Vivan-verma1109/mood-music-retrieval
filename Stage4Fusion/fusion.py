@@ -1,6 +1,5 @@
 import numpy as np
 import pandas as pd
-import joblib
 import faiss
 import requests
 import os
@@ -10,14 +9,12 @@ from sentence_transformers import SentenceTransformer
 load_dotenv()
 LASTFM_KEY = os.environ['LASTFM_API_KEY']
 
+# --- load data ---
 df = pd.read_csv('archive/songs_clustered.csv')
 embeddings = np.load('archive/lyrics_embeddings.npy').astype('float32')
-index = faiss.read_index('archive/lyrics_faiss.index')
-scaler = joblib.load('archive/projection_scaler.pkl')
 model = SentenceTransformer('paraphrase-multilingual-mpnet-base-v2')
 
-features = ['valence', 'energy', 'tempo', 'acousticness', 'danceability']
-
+# --- cluster centroids in lyric space ---
 cluster_ids = sorted(df['cluster'].unique())
 cluster_centroids = np.array([
     embeddings[df[df['cluster'] == c].index.to_numpy()].mean(axis=0)
@@ -34,44 +31,34 @@ def get_listeners(artist, track):
             'track': track,
             'format': 'json'
         }, timeout=3)
-        data = r.json()
-        return int(data['track']['listeners'])
+        return int(r.json()['track']['listeners'])
     except:
         return 0
 
-def query(mood_text, alpha=0.5, top_k=10, pop_candidates=50):
+def query(mood_text, top_k=10, pop_candidates=50):
+    # embed query and find nearest cluster
     query_emb = model.encode([mood_text], normalize_embeddings=True).astype('float32')
-
-    centroid_sims = (cluster_centroids @ query_emb.T).squeeze()
-    cluster_id = int(cluster_ids[np.argmax(centroid_sims)])
+    cluster_id = int(cluster_ids[np.argmax(cluster_centroids @ query_emb.T)])
     print(f"Nearest cluster: {cluster_id} — {df[df['cluster'] == cluster_id]['mood'].iloc[0]}")
 
+    # score candidates by lyric cosine similarity
     candidate_idx = df[df['cluster'] == cluster_id].index.to_numpy()
-    candidate_embs = embeddings[candidate_idx]
-    lyric_sim = (candidate_embs @ query_emb.T).squeeze()
-    audio_sim = lyric_sim
+    score = (embeddings[candidate_idx] @ query_emb.T).squeeze()
 
-    instrumental_mask = df.loc[candidate_idx, 'instrumentalness'].values > 0.5
-    effective_alpha = np.where(instrumental_mask, 1.0, alpha)
-    score = effective_alpha * audio_sim + (1 - effective_alpha) * lyric_sim
-
-    # take top pop_candidates, fetch listener counts, re-rank
+    # take top pool, re-rank by listener count
     top_pool = np.argsort(score)[::-1][:pop_candidates]
     pool_idx = candidate_idx[top_pool]
     pool_scores = score[top_pool]
 
     print(f"Fetching listener counts for top {pop_candidates} candidates...")
-    listeners = []
-    for i in pool_idx:
-        artist = df.loc[i, 'artists'].strip("[]'\"").split("'")[0]
-        track = df.loc[i, 'name']
-        listeners.append(get_listeners(artist, track))
+    listeners = np.array([
+        get_listeners(df.loc[i, 'artists'].strip("[]'\"").split("'")[0], df.loc[i, 'name'])
+        for i in pool_idx
+    ], dtype=float)
 
-    listeners = np.array(listeners, dtype=float)
     median_l = np.median(listeners[listeners > 0]) if (listeners > 0).any() else 1
     listeners = np.where(listeners == 0, median_l, listeners)
-    max_l = listeners.max()
-    listeners_norm = listeners / max_l
+    listeners_norm = listeners / listeners.max()
 
     final_score = pool_scores * (1 + 0.3 * listeners_norm)
     top_local = np.argsort(final_score)[::-1][:top_k]
@@ -84,7 +71,7 @@ def query(mood_text, alpha=0.5, top_k=10, pop_candidates=50):
 
 
 if __name__ == '__main__':
-    query_text = "I want something upbeat and energetic to start my morning"
+    query_text = "I'm feeling melancholic and introspective"
     print(f"\nQuery: {query_text}\n")
-    results = query(query_text, alpha=0.5, top_k=10)
+    results = query(query_text, top_k=10)
     print(results.to_string(index=False))
