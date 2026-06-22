@@ -1,6 +1,8 @@
 FUTURE IMPROVEMENTS
 ===================
 
+ audio similarity: 
+
 Genre filtering
 - tag songs via Last.fm track.getTopTags (free, no auth)
 - detect genre keywords in query ("rap", "jazz", "hindi") and pre-filter candidates
