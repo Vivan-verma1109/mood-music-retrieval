@@ -1,7 +1,12 @@
 FUTURE IMPROVEMENTS
 ===================
 
- audio similarity: 
+Spotify availability check
+- use GET /search to verify final top 10 results exist on Spotify
+- skip songs that don't match and fill with the next best candidates
+- run at query time, not during playlist export (10 calls, fast)
+
+
 
 Genre filtering
 - tag songs via Last.fm track.getTopTags (free, no auth)

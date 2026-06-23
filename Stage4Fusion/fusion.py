@@ -1,49 +1,8 @@
 import numpy as np
-import pandas as pd
-import faiss
-import requests
-import os
-from dotenv import load_dotenv
-from sentence_transformers import SentenceTransformer
 from config import cluster_tags
-
-load_dotenv()
-LASTFM_KEY = os.environ['LASTFM_API_KEY']
-
-# --- load data ---
-df = pd.read_csv('archive/songs_clustered.csv')
-embeddings = np.load('archive/lyrics_embeddings.npy').astype('float32')
-model = SentenceTransformer('paraphrase-multilingual-mpnet-base-v2')
-
-# --- cluster centroids in lyric space ---
-cluster_ids = sorted(df['cluster'].unique())
-
-centroids = []
-# every song that belongs to cluster c, then pull their embeddings.
-# Average those embeddings together and you get one vector that represents the "typical" lyric meaning of songs in that cluster. That's the centroid.
-for c in cluster_ids:
-    rows_in_cluster = df[df['cluster'] == c]        # get all rows in cluster c
-    row_numbers = rows_in_cluster.index.to_numpy()  # get their row numbers as an array
-    cluster_embeddings = embeddings[row_numbers]     # pull their 768-dim vectors from the matrix
-    centroid = cluster_embeddings.mean(axis=0)       # average all those vectors into one 768-dim centroid
-    centroids.append(centroid)
-
-cluster_centroids = np.array(centroids).astype('float32')
-cluster_centroids /= np.linalg.norm(cluster_centroids, axis=1, keepdims=True) + 1e-8  # normalize to length 1 so cosine sim works correctly
-
-# popularity signal
-def get_listeners(artist, track):
-    try:
-        r = requests.get('https://ws.audioscrobbler.com/2.0/', params={
-            'method': 'track.getInfo',
-            'api_key': LASTFM_KEY,
-            'artist': artist,
-            'track': track,
-            'format': 'json'
-        }, timeout=3)
-        return int(r.json()['track']['listeners'])
-    except:
-        return 0
+from Stage4Fusion.loader import df, embeddings, X_scaled, model, cluster_ids, cluster_centroids, audio_centroids
+from Stage4Fusion.lastfm import rerank_by_listeners
+from Stage4Fusion.spotify import filter_available
 
 def find_cluster_by_tags(mood_text):
     query_lower = mood_text.lower()
@@ -56,7 +15,7 @@ def find_cluster_by_tags(mood_text):
         return None
     return max(hit_counts, key=hit_counts.get)
 
-def query(mood_text, top_k = 10, pop_candidates = 50):
+def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3):
 
     # embed query
     query_emb = model.encode([mood_text], normalize_embeddings=True).astype('float32')
@@ -67,9 +26,19 @@ def query(mood_text, top_k = 10, pop_candidates = 50):
         cluster_id = int(cluster_ids[np.argmax(cluster_centroids @ query_emb.T)])
     print(f"Nearest cluster: {cluster_id} — {df[df['cluster'] == cluster_id]['mood'].iloc[0]}")
 
-    # score candidates by lyric cosine similarity
     candidate_idx = df[df['cluster'] == cluster_id].index.to_numpy()
-    score = (embeddings[candidate_idx] @ query_emb.T).squeeze()
+
+    # lyric cosine similarity
+    lyric_sim = (embeddings[candidate_idx] @ query_emb.T).squeeze()
+
+    # audio cosine similarity — how close each song's audio is to the matched cluster's centroid
+    audio_centroid = audio_centroids[cluster_id]
+    candidate_audio = X_scaled[candidate_idx]
+    candidate_audio_norm = candidate_audio / (np.linalg.norm(candidate_audio, axis = 1, keepdims = True) + 1e-8)
+    audio_sim = (candidate_audio_norm @ audio_centroid).squeeze()
+
+    # fuse both signals — alpha controls audio vs lyric weight (0.3 = 30% audio, 70% lyrics)
+    score = alpha * audio_sim + (1 - alpha) * lyric_sim
 
     # take top pool, re-rank by listener count
     top_pool = np.argsort(score)[::-1][:pop_candidates]
@@ -77,27 +46,19 @@ def query(mood_text, top_k = 10, pop_candidates = 50):
     pool_scores = score[top_pool]
 
     print(f"Fetching listener counts for top {pop_candidates} candidates...")
-    listeners = np.array([
-        get_listeners(df.loc[i, 'artists'].strip("[]'\"").split("'")[0], df.loc[i, 'name'])
-        for i in pool_idx
-    ], dtype=float)
-
-    median_l = np.median(listeners[listeners > 0]) if (listeners > 0).any() else 1
-    listeners = np.where(listeners == 0, median_l, listeners)
-    listeners_norm = listeners / listeners.max()
-
-    final_score = pool_scores * (1 + 0.5 * listeners_norm)
-    top_local = np.argsort(final_score)[::-1][:top_k]
-    top_global = pool_idx[top_local]
+    top_global, listeners, final_scores = rerank_by_listeners(pool_idx, pool_scores, df, top_k=20)
 
     results = df.loc[top_global, ['name', 'artists', 'mood', 'valence', 'energy']].copy()
-    results['listeners'] = listeners[top_local].astype(int)
-    results['score'] = final_score[top_local]
+    results['listeners'] = listeners.astype(int)
+    results['score'] = final_scores
+
+    print("Verifying Spotify availability...")
+    results = filter_available(results, top_k=top_k)
     return results
 
 
 if __name__ == '__main__':
-    query_text = "Im feeling Moody Mid-Tempo"
+    query_text = "I'm feeling something fast like rap"
     print(f"\nQuery: {query_text}\n")
-    results = query(query_text, top_k=10)
+    results = query(query_text, top_k = 10)
     print(results.to_string(index=False))

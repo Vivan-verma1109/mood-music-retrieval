@@ -4,6 +4,7 @@ import faiss
 
 df = pd.read_csv('archive/songs_clustered.csv')
 embeddings = np.load('archive/lyrics_embeddings.npy').astype('float32')
+X_scaled = np.load('archive/X_scaled.npy').astype('float32')
 
 # case-insensitive dedup on name + artists
 def lowercase_and_strip(col):
@@ -25,9 +26,11 @@ df_dedup = df[keep_mask].reset_index(drop=True)
 #  Then embeddings[keep_idx] pulls just those rows out of the embedding matrix. Same songs, same order, just with the dupes removed.
 #  embeddings[i] is a 768-number vector representing the meaning of song i's lyrics. The whole matrix is just 845k of those stacked on top of each other
 embeddings_dedup = embeddings[keep_idx]
+X_scaled_dedup = X_scaled[keep_idx]
 
 df_dedup.to_csv('archive/songs_clustered.csv', index=False)
 np.save('archive/lyrics_embeddings.npy', embeddings_dedup)
+np.save('archive/X_scaled.npy', X_scaled_dedup)
 
 # IndexFlatIP = brute-force cosine similarity search (IP = inner product, works as cosine sim since vectors are normalized)
 index = faiss.IndexFlatIP(embeddings_dedup.shape[1])  # 768 = width of each embedding vector
