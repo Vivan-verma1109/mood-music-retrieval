@@ -1,10 +1,19 @@
 import numpy as np
-from config import cluster_tags
+from config import cluster_tags, GENRE_ALIASES
 from Stage4Fusion.loader import df, embeddings, X_scaled, model, cluster_ids, cluster_centroids, audio_centroids
 from Stage4Fusion.lastfm import rerank_by_listeners
 from Stage4Fusion.spotify import filter_available
 
+"""
+Scans query text for cluster keyword matches and returns the best-matching cluster ID.
+
+Args:
+    mood_text (str): Raw user query.
+Returns:
+    int | None: Cluster ID with most keyword hits, or None if no keywords matched.
+"""
 def find_cluster_by_tags(mood_text):
+
     query_lower = mood_text.lower()
     hit_counts = {}
     for cluster_id, tags in cluster_tags.items():
@@ -15,10 +24,44 @@ def find_cluster_by_tags(mood_text):
         return None
     return max(hit_counts, key=hit_counts.get)
 
-def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3):
+"""
+Scans query text for genre keyword matches and returns the corresponding Last.fm tag aliases.
+
+Args:
+    mood_text (str): Raw user query.
+Returns:
+    list[str] | None: List of Last.fm tag aliases for the matched genre, or None if no match.
+"""
+def find_genre_aliases(mood_text):
+
+    query_lower = mood_text.lower()
+    hit_counts = {}
+    for cluster_id, tags in GENRE_ALIASES.items():
+        hits = sum(1 for tag in tags if tag in query_lower)
+        if hits > 0:
+            hit_counts[cluster_id] = hits
+    if not hit_counts:
+        return None
+    return GENRE_ALIASES[max(hit_counts, key=hit_counts.get)]
+
+"""
+Full retrieval pipeline: embeds query, routes to a cluster, scores candidates, re-ranks by popularity, and verifies Spotify availability.
+
+Args:
+    mood_text (str): Natural language mood description from the user.
+    top_k (int): Number of songs to return. Default 10.
+    pop_candidates (int): Candidate pool size passed to Last.fm re-ranking. Default 50.
+    alpha (float): Weight for audio similarity vs lyric similarity (0 = lyrics only, 1 = audio only). Default 0.3.
+    language (str | None): ISO 639-1 language code to filter by (e.g. 'en'). None = no filter.
+Returns:
+    DataFrame: Ranked songs with columns name, artists, mood, valence, energy, listeners, score.
+"""
+def query(mood_text, top_k=10, pop_candidates=50, alpha=0.3, language=None):
 
     # embed query
     query_emb = model.encode([mood_text], normalize_embeddings=True).astype('float32')
+
+    genre = find_genre_aliases(mood_text)
 
     # try tag matching first, fall back to lyric centroid routing
     cluster_id = find_cluster_by_tags(mood_text)
@@ -28,13 +71,17 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3):
 
     candidate_idx = df[df['cluster'] == cluster_id].index.to_numpy()
 
+    if language:
+        lang_mask = df.loc[candidate_idx, 'language'] == language
+        candidate_idx = candidate_idx[lang_mask.values]
+
     # lyric cosine similarity
     lyric_sim = (embeddings[candidate_idx] @ query_emb.T).squeeze()
 
     # audio cosine similarity — how close each song's audio is to the matched cluster's centroid
     audio_centroid = audio_centroids[cluster_id]
     candidate_audio = X_scaled[candidate_idx]
-    candidate_audio_norm = candidate_audio / (np.linalg.norm(candidate_audio, axis = 1, keepdims = True) + 1e-8)
+    candidate_audio_norm = candidate_audio / (np.linalg.norm(candidate_audio, axis=1, keepdims=True) + 1e-8)
     audio_sim = (candidate_audio_norm @ audio_centroid).squeeze()
 
     # fuse both signals — alpha controls audio vs lyric weight (0.3 = 30% audio, 70% lyrics)
@@ -46,7 +93,7 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3):
     pool_scores = score[top_pool]
 
     print(f"Fetching listener counts for top {pop_candidates} candidates...")
-    top_global, listeners, final_scores = rerank_by_listeners(pool_idx, pool_scores, df, top_k=20)
+    top_global, listeners, final_scores = rerank_by_listeners(pool_idx, pool_scores, df, top_k=20, genre_song=genre)
 
     results = df.loc[top_global, ['name', 'artists', 'mood', 'valence', 'energy']].copy()
     results['listeners'] = listeners.astype(int)
@@ -60,5 +107,5 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3):
 if __name__ == '__main__':
     query_text = "I'm feeling something fast like rap"
     print(f"\nQuery: {query_text}\n")
-    results = query(query_text, top_k = 10)
+    results = query(query_text, top_k=10, language="en")
     print(results.to_string(index=False))

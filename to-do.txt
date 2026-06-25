@@ -1,20 +1,34 @@
 FUTURE IMPROVEMENTS
 ===================
 
+
+DONE
+
 Spotify availability check
 - use GET /search to verify final top 10 results exist on Spotify
 - skip songs that don't match and fill with the next best candidates
-- run at query time, not during playlist export (10 calls, fast)
+- run at query time, not during playlist export (10 calls, fast) - DONE
+
+
+Language filtering
+- detect language per song (langdetect on lyrics, or Last.fm tags)
+- let user specify language preference in query - DONE
+
+
+IN PROGRESS
+
+
+NOT STARTED
 
 
 
 Genre filtering
-- tag songs via Last.fm track.getTopTags (free, no auth)
-- detect genre keywords in query ("rap", "jazz", "hindi") and pre-filter candidates
-
-Language filtering
-- detect language per song (langdetect on lyrics, or Last.fm tags)
-- let user specify language preference in query
+- detect genre keywords in query via keyword matching (same approach as cluster tag routing)
+- alias map in config.py: e.g. 'rap' → ['rap', 'hip-hop', 'hip hop', 'hiphop']
+- modify get_listeners() → get_track_info() to return (listeners, tags) from same track.getInfo call (zero extra API calls)
+- apply score boost (e.g. 1.4x) for tag-matching songs in rerank_by_listeners()
+- untagged songs get 1.0x (neutral, not penalized) — high lyric/audio score still wins
+- query() gets genre=None param, auto-detected from query text via keyword match
 
 Exclude user's liked songs
 - Spotify OAuth (Authorization Code flow) to get user's saved tracks
