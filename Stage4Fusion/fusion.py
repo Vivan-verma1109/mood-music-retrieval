@@ -107,5 +107,5 @@ def query(mood_text, top_k=10, pop_candidates=50, alpha=0.3, language=None):
 if __name__ == '__main__':
     query_text = "I'm feeling something fast like rap"
     print(f"\nQuery: {query_text}\n")
-    results = query(query_text, top_k=10, language="en")
+    results = query(query_text, top_k = 10, language= "en", pop_candidates = 50)
     print(results.to_string(index=False))

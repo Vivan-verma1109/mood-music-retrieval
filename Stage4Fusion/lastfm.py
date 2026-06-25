@@ -67,6 +67,7 @@ def rerank_by_listeners(pool_idx, pool_scores, df, top_k, popularity_weight=0.5,
             tag_names = [t['name'].lower() for t in tag]
             if any(alias in tag_names for alias in genre_song):
                 final_score[idx] *= 1.4
+                print(f"  Genre boost: {df.loc[pool_idx[idx], 'name']}")
     top_local = np.argsort(final_score)[::-1][:top_k]
 
     return pool_idx[top_local], listeners[top_local], final_score[top_local]
