@@ -1,6 +1,16 @@
 FUTURE IMPROVEMENTS
 ===================
 
+  Plan:
+  1. PCA lyric embeddings 768 → 50 dims
+  2. Normalize both sides, apply 0.8/0.2 weights
+  3. Concatenate → 55-dim vectors
+  4. Rerun KMeans on those
+  5. Re-assign cluster column in CSV
+  6. Recompute centroids in loader.py
+  7. Manually re-label the new clusters (they'll be different)
+
+
 
 DONE
 

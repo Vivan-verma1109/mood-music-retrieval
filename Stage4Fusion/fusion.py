@@ -106,7 +106,7 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3, language=None
 
 
 if __name__ == '__main__':
-    query_text = "I'm feeling sad and lonely, something slow and acoustic"
+    query_text = "something to vibe to while driving at night"
     print(f"\nQuery: {query_text}\n")
     results = query(query_text, top_k = 10, language= "en", pop_candidates = 100)
     print(results.to_string(index=False))
