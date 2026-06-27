@@ -21,14 +21,15 @@ def get_track_info(artist, track):
 
     try:
         r = requests.get('https://ws.audioscrobbler.com/2.0/', params={
-            'method': 'track.getInfo',
+            'method': 'artist.getInfo',
             'api_key': LASTFM_KEY,
             'artist': artist,
-            'track': track,
             'format': 'json'
         }, timeout=3)
-        data = r.json()['track']
-        return (int(data['listeners']), data['toptags']['tag'])
+        data = r.json()['artist']
+        listeners = int(data['stats']['listeners'])
+        tags = [t['name'].lower() for t in data.get('tags', {}).get('tag', [])]
+        return listeners, tags
     except:
         return 0, []
 
@@ -45,7 +46,7 @@ Args:
 Returns:
     tuple: (top_indices: np.ndarray, listeners: np.ndarray, final_scores: np.ndarray)
 """
-def rerank_by_listeners(pool_idx, pool_scores, df, top_k, popularity_weight=0.5, genre_song=None):
+def rerank_by_listeners(pool_idx, pool_scores, df, top_k, popularity_weight= 0.3, genre_song=None):
 
     listeners = []
     tags = []
@@ -59,14 +60,15 @@ def rerank_by_listeners(pool_idx, pool_scores, df, top_k, popularity_weight=0.5,
 
     median_l = np.median(listeners[listeners > 0]) if (listeners > 0).any() else 1
     listeners = np.where(listeners == 0, median_l, listeners)
-    listeners_norm = listeners / listeners.max()
+    LISTENER_CAP = 2_000_000
+    listeners_norm = np.minimum(listeners, LISTENER_CAP) / LISTENER_CAP
 
     final_score = pool_scores * (1 + popularity_weight * listeners_norm)
     if genre_song:
         for idx, tag in enumerate(tags):
-            tag_names = [t['name'].lower() for t in tag]
+            tag_names = tag
             if any(alias in tag_names for alias in genre_song):
-                final_score[idx] *= 1.4
+                final_score[idx] *= 1.8
                 print(f"  Genre boost: {df.loc[pool_idx[idx], 'name']}")
     top_local = np.argsort(final_score)[::-1][:top_k]
 

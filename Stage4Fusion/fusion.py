@@ -10,7 +10,7 @@ Scans query text for cluster keyword matches and returns the best-matching clust
 Args:
     mood_text (str): Raw user query.
 Returns:
-    int | None: Cluster ID with most keyword hits, or None if no keywords matched.
+    list[int] |None: Top 2 cluster IDs, or None if no keywords matched
 """
 def find_cluster_by_tags(mood_text):
 
@@ -22,7 +22,8 @@ def find_cluster_by_tags(mood_text):
             hit_counts[cluster_id] = hits
     if not hit_counts:
         return None
-    return max(hit_counts, key=hit_counts.get)
+    sorted_clusters = sorted(hit_counts, key=hit_counts.get, reverse=True)
+    return sorted_clusters[:2]
 
 """
 Scans query text for genre keyword matches and returns the corresponding Last.fm tag aliases.
@@ -56,32 +57,32 @@ Args:
 Returns:
     DataFrame: Ranked songs with columns name, artists, mood, valence, energy, listeners, score.
 """
-def query(mood_text, top_k=10, pop_candidates=50, alpha=0.3, language=None):
+def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3, language=None):
 
     # embed query
     query_emb = model.encode([mood_text], normalize_embeddings=True).astype('float32')
 
     genre = find_genre_aliases(mood_text)
 
-    # try tag matching first, fall back to lyric centroid routing
-    cluster_id = find_cluster_by_tags(mood_text)
-    if cluster_id is None:
-        cluster_id = int(cluster_ids[np.argmax(cluster_centroids @ query_emb.T)])
-    print(f"Nearest cluster: {cluster_id} — {df[df['cluster'] == cluster_id]['mood'].iloc[0]}")
+    cluster_ids_matched = find_cluster_by_tags(mood_text)
+    if cluster_ids_matched is None:
+        cluster_ids_matched = np.array(cluster_ids)[np.argsort((cluster_centroids @ query_emb.T).squeeze())[::-1][:2]].tolist()
+    print(f"Nearest clusters: {cluster_ids_matched}")
 
-    candidate_idx = df[df['cluster'] == cluster_id].index.to_numpy()
+    candidate_idx = df[df['cluster'].isin(cluster_ids_matched)].index.to_numpy()
 
     if language:
         lang_mask = df.loc[candidate_idx, 'language'] == language
         candidate_idx = candidate_idx[lang_mask.values]
 
-    # lyric cosine similarity
     lyric_sim = (embeddings[candidate_idx] @ query_emb.T).squeeze()
 
-    # audio cosine similarity — how close each song's audio is to the matched cluster's centroid
-    audio_centroid = audio_centroids[cluster_id]
+    audio_centroid = np.mean([audio_centroids[c] for c in cluster_ids_matched], axis=0)
+    audio_centroid /= np.linalg.norm(audio_centroid) + 1e-8
+
     candidate_audio = X_scaled[candidate_idx]
     candidate_audio_norm = candidate_audio / (np.linalg.norm(candidate_audio, axis=1, keepdims=True) + 1e-8)
+
     audio_sim = (candidate_audio_norm @ audio_centroid).squeeze()
 
     # fuse both signals — alpha controls audio vs lyric weight (0.3 = 30% audio, 70% lyrics)
@@ -105,7 +106,7 @@ def query(mood_text, top_k=10, pop_candidates=50, alpha=0.3, language=None):
 
 
 if __name__ == '__main__':
-    query_text = "I'm feeling something fast like rap"
+    query_text = "I'm feeling sad and lonely, something slow and acoustic"
     print(f"\nQuery: {query_text}\n")
-    results = query(query_text, top_k = 10, language= "en", pop_candidates = 50)
+    results = query(query_text, top_k = 10, language= "en", pop_candidates = 100)
     print(results.to_string(index=False))
