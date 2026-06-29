@@ -1,17 +1,6 @@
 FUTURE IMPROVEMENTS
 ===================
 
-  Plan:
-  1. PCA lyric embeddings 768 → 50 dims
-  2. Normalize both sides, apply 0.8/0.2 weights
-  3. Concatenate → 55-dim vectors
-  4. Rerun KMeans on those
-  5. Re-assign cluster column in CSV
-  6. Recompute centroids in loader.py
-  7. Manually re-label the new clusters (they'll be different)
-
-
-
 DONE
 
 Spotify availability check
@@ -24,6 +13,14 @@ Language filtering
 - detect language per song (langdetect on lyrics, or Last.fm tags)
 - let user specify language preference in query - DONE
 
+Genre filtering
+- detect genre keywords in query via keyword matching (same approach as cluster tag routing)
+- alias map in config.py: e.g. 'rap' → ['rap', 'hip-hop', 'hip hop', 'hiphop']
+- modify get_listeners() → get_track_info() to return (listeners, tags) from same track.getInfo call (zero extra API calls)
+- apply score boost (e.g. 1.4x) for tag-matching songs in rerank_by_listeners()
+- untagged songs get 1.0x (neutral, not penalized) — high lyric/audio score still wins
+- query() gets genre=None param, auto-detected from query text via keyword match
+
 
 IN PROGRESS
 
@@ -32,13 +29,7 @@ NOT STARTED
 
 
 
-Genre filtering
-- detect genre keywords in query via keyword matching (same approach as cluster tag routing)
-- alias map in config.py: e.g. 'rap' → ['rap', 'hip-hop', 'hip hop', 'hiphop']
-- modify get_listeners() → get_track_info() to return (listeners, tags) from same track.getInfo call (zero extra API calls)
-- apply score boost (e.g. 1.4x) for tag-matching songs in rerank_by_listeners()
-- untagged songs get 1.0x (neutral, not penalized) — high lyric/audio score still wins
-- query() gets genre=None param, auto-detected from query text via keyword match
+
 
 Exclude user's liked songs
 - Spotify OAuth (Authorization Code flow) to get user's saved tracks
