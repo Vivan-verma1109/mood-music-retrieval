@@ -46,7 +46,7 @@ Args:
 Returns:
     tuple: (top_indices: np.ndarray, listeners: np.ndarray, final_scores: np.ndarray)
 """
-def rerank_by_listeners(pool_idx, pool_scores, df, top_k, popularity_weight= 0.3, genre_song=None):
+def rerank_by_listeners(pool_idx, pool_scores, df, top_k, popularity_weight = 0.3, genre_song=None):
 
     listeners = []
     tags = []
@@ -60,7 +60,14 @@ def rerank_by_listeners(pool_idx, pool_scores, df, top_k, popularity_weight= 0.3
 
     median_l = np.median(listeners[listeners > 0]) if (listeners > 0).any() else 1
     listeners = np.where(listeners == 0, median_l, listeners)
-    LISTENER_CAP = 2_000_000
+    keep = listeners >= 100_000
+    pool_idx = pool_idx[keep]
+    pool_scores = pool_scores[keep]
+    listeners = listeners[keep]
+    tags = [tags[i] for i in np.where(keep)[0]]
+
+
+    LISTENER_CAP = 10_000_000
     listeners_norm = np.minimum(listeners, LISTENER_CAP) / LISTENER_CAP
 
     final_score = pool_scores * (1 + popularity_weight * listeners_norm)
@@ -68,7 +75,7 @@ def rerank_by_listeners(pool_idx, pool_scores, df, top_k, popularity_weight= 0.3
         for idx, tag in enumerate(tags):
             tag_names = tag
             if any(alias in tag_names for alias in genre_song):
-                final_score[idx] *= 1.8
+                final_score[idx] *= 2.2
                 print(f"  Genre boost: {df.loc[pool_idx[idx], 'name']}")
     top_local = np.argsort(final_score)[::-1][:top_k]
 

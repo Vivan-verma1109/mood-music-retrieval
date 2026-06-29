@@ -1,9 +1,12 @@
 cluster_tags = {
-    0: ['angry', 'rage', 'aggressive', 'intense', 'dark', 'heavy', 'powerful', 'fierce', 'mad', 'rap', 'hip hop', 'hiphop'],
-    1: ['moody', 'brooding', 'bittersweet', 'contemplative', 'pensive', 'gloomy', 'mid-tempo'],
-    2: ['sad', 'lonely', 'melancholic', 'introspective', 'heartbreak', 'depressed', 'somber', 'quiet'],
-    3: ['happy', 'upbeat', 'party', 'hype', 'energetic', 'euphoric', 'dance', 'excited', 'pumped'],
-    4: ['chill', 'sunny', 'warm', 'peaceful', 'relaxed', 'mellow', 'good vibes', 'acoustic']
+    0: ['chill', 'acoustic', 'folk', 'mellow', 'cozy', 'soft', 'warm'],
+    1: ['happy', 'euphoric', 'party', 'dance', 'excited', 'pumped', 'fun', 'upbeat'],
+    2: ['angry', 'rage', 'aggressive', 'intense', 'heavy', 'powerful', 'fierce', 'mad', 'metal', 'hardcore'],
+    3: ['moody', 'brooding', 'bittersweet', 'contemplative', 'pensive', 'gloomy', 'mid-tempo', 'melancholic'],
+    4: ['sunny', 'peaceful', 'relaxed', 'good vibes', 'uplifting', 'positive'],
+    5: ['rap', 'hip hop', 'hiphop', 'energetic', 'hype', 'lit', 'turn up', 'rock', 'alt'],
+    6: ['sad', 'lonely', 'introspective', 'heartbreak', 'depressed', 'somber', 'quiet', 'crying'],
+    7: ['dark', 'vibe', 'night', 'late night', 'drive', 'r&b', 'rnb', 'trap', 'drill'],
 }
 
 _HIP_HOP = ["hip hop", "hiphop", "hip-hop", "rap", "trap", "drill", "boom bap", "conscious hip hop"]
@@ -36,3 +39,6 @@ GENRE_ALIASES = {
     "emo":        ["emo", "emo pop", "post-hardcore", "screamo", "midwest emo"],
     "punk":       ["punk", "punk rock", "pop punk", "hardcore punk", "skate punk"],
 }
+
+
+# add a filter for artist name

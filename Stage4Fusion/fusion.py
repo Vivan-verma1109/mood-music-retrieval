@@ -1,3 +1,4 @@
+import re
 import numpy as np
 from config import cluster_tags, GENRE_ALIASES
 from Stage4Fusion.loader import df, embeddings, X_scaled, model, cluster_ids, cluster_centroids, audio_centroids
@@ -96,9 +97,16 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3, language=None
     print(f"Fetching listener counts for top {pop_candidates} candidates...")
     top_global, listeners, final_scores = rerank_by_listeners(pool_idx, pool_scores, df, top_k=20, genre_song=genre)
 
+
     results = df.loc[top_global, ['name', 'artists', 'mood', 'valence', 'energy']].copy()
     results['listeners'] = listeners.astype(int)
     results['score'] = final_scores
+
+    # dedup: strip parentheticals then match on artist + base title
+    results['_name_lower'] = results['name'].str.lower().str.strip().str.replace(r'\s*[\(\[].*?[\)\]]', '', regex=True).str.strip()
+    results['_artist_lower'] = results['artists'].str.lower().str.strip()
+    results = results.drop_duplicates(subset=['_name_lower', '_artist_lower'])
+    results = results.drop(columns=['_name_lower', '_artist_lower'])
 
     print("Verifying Spotify availability...")
     results = filter_available(results, top_k=top_k)
@@ -106,7 +114,7 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3, language=None
 
 
 if __name__ == '__main__':
-    query_text = "something to vibe to while driving at night"
+    query_text = "Something hindi like"
     print(f"\nQuery: {query_text}\n")
-    results = query(query_text, top_k = 10, language= "en", pop_candidates = 100)
+    results = query(query_text, top_k = 10, pop_candidates = 150)
     print(results.to_string(index=False))
