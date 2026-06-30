@@ -1,9 +1,9 @@
 import re
 import numpy as np
-from config import cluster_tags, GENRE_ALIASES
-from Stage4Fusion.loader import df, embeddings, X_scaled, model, cluster_ids, cluster_centroids, audio_centroids
-from Stage4Fusion.lastfm import rerank_by_listeners
-from Stage4Fusion.spotify import filter_available
+from backend.config import cluster_tags, GENRE_ALIASES
+from backend.Stage4Fusion.loader import df, embeddings, X_scaled, model, cluster_ids, cluster_centroids, audio_centroids
+from backend.Stage4Fusion.lastfm import rerank_by_listeners
+from backend.Stage4Fusion.spotify import filter_available
 
 """
 Scans query text for cluster keyword matches and returns the best-matching cluster ID.

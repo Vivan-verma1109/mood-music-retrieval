@@ -14,14 +14,14 @@ Language filtering
 - let user specify language preference in query - DONE
 
 Genre filtering
-- detect genre keywords in query via keyword matching (same approach as cluster tag routing)
-- alias map in config.py: e.g. 'rap' → ['rap', 'hip-hop', 'hip hop', 'hiphop']
-- modify get_listeners() → get_track_info() to return (listeners, tags) from same track.getInfo call (zero extra API calls)
-- apply score boost (e.g. 1.4x) for tag-matching songs in rerank_by_listeners()
-- untagged songs get 1.0x (neutral, not penalized) — high lyric/audio score still wins
-- query() gets genre=None param, auto-detected from query text via keyword match
+- CURRENT: genre keyword detected from query text, matched against alias map in config.py, passed to rerank_by_listeners() as a score boost (2.2x) — not a hard filter
+- TODO: replace boost with hard filter using Last.fm track.getTopTags per candidate song
+- TODO: remove score boost block from rerank_by_listeners() once hard filter is in
+- UI: genre will be a dropdown in the React frontend, passed directly to query() — no query text parsing needed
 
-
+Expand cluster search
+- search top 2 nearest clusters instead of 1
+- better coverage for queries that sit on the border between moods
 IN PROGRESS
 
 
@@ -35,12 +35,12 @@ Exclude user's liked songs
 - Spotify OAuth (Authorization Code flow) to get user's saved tracks
 - filter out already-liked songs from results so playlist is always fresh
 
-Expand cluster search
-- search top 2 nearest clusters instead of 1
-- better coverage for queries that sit on the border between moods
+
 
 Demo interface
-- Gradio or CLI with interactive query input
+- React frontend + FastAPI backend
+- separate input boxes for mood (text), artist (text), genre (dropdown), language (dropdown), top_k (slider)
+- artist filter parsed from query text removed in favor of explicit UI input
 - show album art, Spotify links
 
 Spotify playlist export

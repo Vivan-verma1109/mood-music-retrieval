@@ -1,13 +1,16 @@
+import os
 import numpy as np
 import pandas as pd
 import joblib
 from sentence_transformers import SentenceTransformer
 
-df = pd.read_csv('archive/songs_clustered.csv')
-embeddings = np.load('archive/lyrics_embeddings.npy').astype('float32')
-X_scaled = np.load('archive/X_scaled.npy').astype('float32')
+_archive = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'archive')
+
+df = pd.read_csv(os.path.join(_archive, 'songs_clustered.csv'))
+embeddings = np.load(os.path.join(_archive, 'lyrics_embeddings.npy')).astype('float32')
+X_scaled = np.load(os.path.join(_archive, 'X_scaled.npy')).astype('float32')
 model = SentenceTransformer('paraphrase-multilingual-mpnet-base-v2')
-kmeans = joblib.load('archive/kmeans_model.pkl')
+kmeans = joblib.load(os.path.join(_archive, 'kmeans_model.pkl'))
 
 # normalize KMeans audio centroids to unit length for cosine sim
 audio_centroids = kmeans.cluster_centers_.astype('float32')
