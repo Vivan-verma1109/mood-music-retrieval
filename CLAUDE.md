@@ -85,14 +85,16 @@ User mood query (text)
 3. [x] Lyrics embedded with SBERT on GPU, FAISS index built
 4. [x] Projection layer trained (Ridge 768→5) — dropped in favor of lyric centroid routing
 5. [x] End-to-end query → cluster filter → lyric rerank working
-6. [ ] Restore audio similarity signal (KMeans centroid cosine sim in audio space)
-7. [ ] Qualitative evaluation + fusion weight tuning
-8. [ ] Genre filtering (Last.fm track.getTopTags)
-9. [ ] Language filtering
-10. [ ] Demo interface (Gradio)
-11. [ ] Spotify playlist export (OAuth + POST /me/playlists)
-12. [ ] Filter out user's liked songs from results
-13. [ ] Release year / era filtering
+6. [x] Codebase restructured into backend/ folder
+7. [ ] FastAPI api.py at root exposing /query endpoint
+8. [ ] React frontend in frontend/ with inputs for mood, artist, genre, language, top_k
+9. [ ] Restore audio similarity signal (KMeans centroid cosine sim in audio space)
+10. [ ] Qualitative evaluation + fusion weight tuning
+11. [ ] Genre hard filter (Last.fm track.getTopTags) — replace current score boost
+12. [ ] Spotify OAuth + PostgreSQL (SQLAlchemy) for token storage
+13. [ ] Spotify playlist export (POST /me/playlists)
+14. [ ] Filter out user's liked songs from results
+15. [ ] Release year / era filtering
 
 ---
 
@@ -104,7 +106,17 @@ User mood query (text)
 - **Dedup on case-insensitive name+artist**: removed 110k duplicates. Embeddings and FAISS index filtered in sync.
 - **Not collaborative filtering**: no user interaction data; content-based + query-based only.
 
+## Stack
+- **Backend**: FastAPI (Python), PostgreSQL + SQLAlchemy (for OAuth token storage)
+- **Frontend**: React
+- **ML pipeline**: lives in backend/ — numpy, pandas, SBERT, FAISS, scikit-learn
+
+## Decisions & Rationale (continued)
+- **React over Gradio**: chosen for long-term flexibility — Spotify OAuth, playlist export, liked songs filter all require a real frontend
+- **PostgreSQL over SQLite**: chosen for flexibility as the project grows (user data, playlists, query history)
+- **Artist filter via UI input**: extracting artist names from free-text query is fragile; dedicated input box in the React UI is cleaner
+- **Genre as score boost (current)**: pending hard filter via Last.fm track.getTopTags; boost stays until then
+
 ## Non-Goals
-- User accounts or personalization
 - Training a music-specific language model
 - Production deployment
