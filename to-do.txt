@@ -12,6 +12,8 @@ Spotify availability check
 Language filtering
 - detect language per song (langdetect on lyrics, or Last.fm tags)
 - let user specify language preference in query - DONE
+- KNOWN BUG: some multilingual songs (e.g. BTS "ON") misclassified as 'en' by langdetect
+  because title/partial lyrics are in English — may need better language detection or manual corrections
 
 Genre filtering
 - CURRENT: genre keyword detected from query text, matched against alias map in config.py, passed to rerank_by_listeners() as a score boost (2.2x) — not a hard filter
@@ -27,8 +29,11 @@ IN PROGRESS
 
 NOT STARTED
 
-
-
+#1 PRIORITY
+Semantic cluster routing
+- replace cluster_tags keyword matching with SBERT embedding of cluster labels/descriptions
+- cosine similarity between query embedding and cluster description embeddings to pick clusters
+- handles synonyms and paraphrases automatically, no manual keyword lists needed
 
 
 Exclude user's liked songs

@@ -18,14 +18,17 @@ class QueryRequest(BaseModel):
     mood: str
     top_k: int = 10
     language: Optional[str] = None
-    artists: Optional[list[str]] = None
+    genre: Optional[str] = None
+    artist: Optional[str] = None
 
 @app.post("/query")
 def run_query(req: QueryRequest):
     results = query(
-        mood_text=req.mood,
-        top_k=req.top_k,
-        language=req.language,
+        mood_text = req.mood,
+        top_k = req.top_k,
+        language = req.language,
+        genre = req.genre,
+        artist = req.artist
     )
     # orient="records" gives [{name: ..., artists: ...}, ...] — standard JSON list format
     return results.to_dict(orient="records")

@@ -1,5 +1,5 @@
 cluster_tags = {
-    0: ['chill', 'acoustic', 'folk', 'mellow', 'cozy', 'soft', 'warm'],
+    0: ['chill', 'acoustic', 'folk', 'mellow', 'cozy', 'soft', 'warm', 'slow', 'lofi', 'lo-fi', 'lo fi', 'ambient', 'gentle', 'quiet'],
     1: ['happy', 'euphoric', 'party', 'dance', 'excited', 'pumped', 'fun', 'upbeat'],
     2: ['angry', 'rage', 'aggressive', 'intense', 'heavy', 'powerful', 'fierce', 'mad', 'metal', 'hardcore'],
     3: ['moody', 'brooding', 'bittersweet', 'contemplative', 'pensive', 'gloomy', 'mid-tempo', 'melancholic'],
@@ -40,5 +40,23 @@ GENRE_ALIASES = {
     "punk":       ["punk", "punk rock", "pop punk", "hardcore punk", "skate punk"],
 }
 
-
-# add a filter for artist name
+                                
+GENRE_CLUSTERS = {
+    "hiphop": [5, 7],
+    "rap":    [5, 7],
+    "pop":    [1, 4],
+    "lofi":   [0],
+    "rnb":    [7],
+    "electronic": [1, 7],
+    "rock":   [2, 5],
+    "metal":  [2],
+    "jazz":   [0, 3],
+    "classical": [0],
+    "country": [0, 4],
+    "latin":  [1, 4],
+    "reggae": [4],
+    "emo":    [3, 6],
+    "punk":   [2, 5],
+    "kpop":   [1, 4],
+    "anime":  [1, 3],
+}
