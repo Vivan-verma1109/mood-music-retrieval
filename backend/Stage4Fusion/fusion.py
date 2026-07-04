@@ -1,29 +1,8 @@
 import numpy as np
-from backend.config import cluster_tags, GENRE_ALIASES, GENRE_CLUSTERS
-from backend.Stage4Fusion.loader import df, embeddings, X_scaled, model, cluster_ids, cluster_centroids, audio_centroids
+from backend.config import GENRE_ALIASES, GENRE_CLUSTERS
+from backend.Stage4Fusion.loader import df, embeddings, X_scaled, model, cluster_ids, cluster_centroids, audio_centroids, cluster_desc_embeddings
 from backend.Stage4Fusion.lastfm import rerank_by_listeners
 from backend.Stage4Fusion.spotify import filter_available
-
-"""
-Scans query text for cluster keyword matches and returns the top 2 best-matching cluster IDs.
-
-Args:
-    mood_text (str): Raw user query.
-Returns:
-    list[int] | None: Top 2 cluster IDs sorted by hit count, or None if no keywords matched.
-"""
-def find_cluster_by_tags(mood_text):
-
-    query_lower = mood_text.lower()
-    hit_counts = {}
-    for cluster_id, tags in cluster_tags.items():
-        hits = sum(1 for tag in tags if tag in query_lower)
-        if hits > 0:
-            hit_counts[cluster_id] = hits
-    if not hit_counts:
-        return None
-    sorted_clusters = sorted(hit_counts, key=hit_counts.get, reverse=True)
-    return sorted_clusters[:2]
 
 """
 Scans query text for genre keywords and returns the corresponding Last.fm tag aliases from GENRE_ALIASES.
@@ -82,9 +61,8 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3, language = No
     if genre and genre in GENRE_CLUSTERS:
         cluster_ids_matched = GENRE_CLUSTERS[genre]
     else:
-        cluster_ids_matched = find_cluster_by_tags(mood_text)
-        if cluster_ids_matched is None:
-            cluster_ids_matched = np.array(cluster_ids)[np.argsort((cluster_centroids @ query_emb.T).squeeze())[::-1][:2]].tolist()
+        sims = (cluster_desc_embeddings @ query_emb.T).squeeze()
+        cluster_ids_matched = np.array(cluster_ids)[np.argsort(sims)[::-1][:2]].tolist()
 
     artists = [artist] if artist else None
     # resolve genre string to Last.fm tag aliases for the boost step

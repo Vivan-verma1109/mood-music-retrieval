@@ -36,6 +36,11 @@ Semantic cluster routing
 - handles synonyms and paraphrases automatically, no manual keyword lists needed
 
 
+Artist filter bypasses cluster routing
+- if artist is passed, skip cluster routing entirely and use all songs as candidate pool
+- filter by artist first, then score by lyric + audio sim directly
+
+
 Exclude user's liked songs
 - Spotify OAuth (Authorization Code flow) to get user's saved tracks
 - filter out already-liked songs from results so playlist is always fresh

@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import joblib
 from sentence_transformers import SentenceTransformer
+from backend.config import cluster_descriptions
 
 _archive = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'archive')
 
@@ -31,3 +32,7 @@ for c in cluster_ids:
 
 cluster_centroids = np.array(centroids).astype('float32')
 cluster_centroids /= np.linalg.norm(cluster_centroids, axis=1, keepdims=True) + 1e-8  # normalize to length 1 so cosine sim works correctly
+
+# embed cluster descriptions once at startup for semantic routing
+desc_texts = [cluster_descriptions[c] for c in cluster_ids]
+cluster_desc_embeddings = model.encode(desc_texts, normalize_embeddings=True).astype('float32')

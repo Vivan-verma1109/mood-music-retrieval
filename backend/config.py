@@ -1,12 +1,12 @@
-cluster_tags = {
-    0: ['chill', 'acoustic', 'folk', 'mellow', 'cozy', 'soft', 'warm', 'slow', 'lofi', 'lo-fi', 'lo fi', 'ambient', 'gentle', 'quiet'],
-    1: ['happy', 'euphoric', 'party', 'dance', 'excited', 'pumped', 'fun', 'upbeat'],
-    2: ['angry', 'rage', 'aggressive', 'intense', 'heavy', 'powerful', 'fierce', 'mad', 'metal', 'hardcore'],
-    3: ['moody', 'brooding', 'bittersweet', 'contemplative', 'pensive', 'gloomy', 'mid-tempo', 'melancholic'],
-    4: ['sunny', 'peaceful', 'relaxed', 'good vibes', 'uplifting', 'positive'],
-    5: ['rap', 'hip hop', 'hiphop', 'energetic', 'hype', 'lit', 'turn up', 'rock', 'alt'],
-    6: ['sad', 'lonely', 'introspective', 'heartbreak', 'depressed', 'somber', 'quiet', 'crying'],
-    7: ['dark', 'vibe', 'night', 'late night', 'drive', 'r&b', 'rnb', 'trap', 'drill'],
+cluster_descriptions = {
+    0: "acoustic and mellow, warm and intimate, background music for relaxing or studying, folk and singer-songwriter, cozy and unhurried",
+    1: "happy and euphoric, high energy dance music, upbeat pop, feel-good and celebratory, electronic and bright",
+    2: "aggressive and intense, hard rock and metal, dark and powerful, driving and relentless, raw and heavy",
+    3: "moody and brooding, mid-tempo and atmospheric, bittersweet, neither loud nor quiet, contemplative and cloudy",
+    4: "upbeat and warm, feel-good acoustic pop, sunny and optimistic, half-acoustic half-electronic, easy and light",
+    5: "high energy and driving, electric and hard-hitting, hip-hop and rock energy, intense without being dark, urgent and forward-moving",
+    6: "quiet and deeply sad, acoustic and sparse, lonely and introspective, slow and somber, heartbreak and grief",
+    7: "dark and groovy, late-night electronic, trap and R&B, brooding with a steady pulse, atmospheric and nocturnal",
 }
 
 _HIP_HOP = ["hip hop", "hiphop", "hip-hop", "rap", "trap", "drill", "boom bap", "conscious hip hop"]
