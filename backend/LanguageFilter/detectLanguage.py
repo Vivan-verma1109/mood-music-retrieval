@@ -1,3 +1,5 @@
+# One-time script — detects the language of each song's lyrics using langdetect and writes it to the dataset.
+# Run once during data prep; output stored in the 'language' column of songs_clustered.csv.
 import pandas as pd
 from langdetect import detect
 

@@ -1,3 +1,5 @@
+# One-time deduplication script — removes duplicate songs (case-insensitive name+artist match) and keeps embeddings in sync.
+# Reduced dataset from 955k to 845k songs.
 import numpy as np
 import pandas as pd
 import faiss

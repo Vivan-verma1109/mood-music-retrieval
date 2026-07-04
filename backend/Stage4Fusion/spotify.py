@@ -1,3 +1,5 @@
+# Spotify availability check — verifies that final candidates exist on Spotify via search API.
+# Filters out songs that don't match and fills in from the next best candidates.
 import os
 import spotipy
 from dotenv import load_dotenv

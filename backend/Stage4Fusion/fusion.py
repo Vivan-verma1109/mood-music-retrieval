@@ -1,3 +1,5 @@
+# Core retrieval pipeline — takes a mood query and returns a ranked playlist.
+# Handles cluster routing, candidate filtering, lyric+audio scoring, Last.fm re-ranking, and Spotify availability check.
 import numpy as np
 from backend.config import GENRE_ALIASES, GENRE_CLUSTERS
 from backend.Stage4Fusion.loader import df, embeddings, X_scaled, model, cluster_ids, cluster_centroids, audio_centroids, cluster_desc_embeddings
@@ -35,7 +37,7 @@ def cap_artists(pool_idx, pool_scores, df, max_per = 1):
         if count < max_per:
             seen[artist] = count + 1
             keep.append(i)
-    keep = np.array(keep)
+    keep = np.array(keep, dtype=int)
     return pool_idx[keep], pool_scores[keep]
 
 """
@@ -60,9 +62,11 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3, language = No
 
     if genre and genre in GENRE_CLUSTERS:
         cluster_ids_matched = GENRE_CLUSTERS[genre]
+    elif artist:
+        cluster_ids_matched = cluster_ids
     else:
         sims = (cluster_desc_embeddings @ query_emb.T).squeeze()
-        cluster_ids_matched = np.array(cluster_ids)[np.argsort(sims)[::-1][:2]].tolist()
+        cluster_ids_matched = np.array(cluster_ids)[np.argsort(sims)[::-1][:3]].tolist()
 
     artists = [artist] if artist else None
     # resolve genre string to Last.fm tag aliases for the boost step
@@ -83,7 +87,7 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3, language = No
         artist_mask = artist_col.apply(lambda cell: any(a in cell for a in artist_lower))
         candidate_idx = candidate_idx[artist_mask.values]
 
-    lyric_sim = (embeddings[candidate_idx] @ query_emb.T).squeeze()
+    lyric_sim = (embeddings[candidate_idx] @ query_emb.T).reshape(-1)
 
     audio_centroid = np.mean([audio_centroids[c] for c in cluster_ids_matched], axis=0)
     audio_centroid /= np.linalg.norm(audio_centroid) + 1e-8
@@ -91,7 +95,7 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3, language = No
     candidate_audio = X_scaled[candidate_idx]
     candidate_audio_norm = candidate_audio / (np.linalg.norm(candidate_audio, axis=1, keepdims=True) + 1e-8)
 
-    audio_sim = (candidate_audio_norm @ audio_centroid).squeeze()
+    audio_sim = (candidate_audio_norm @ audio_centroid).reshape(-1)
 
     # fuse both signals — alpha controls audio vs lyric weight (0.3 = 30% audio, 70% lyrics)
     score = alpha * audio_sim + (1 - alpha) * lyric_sim

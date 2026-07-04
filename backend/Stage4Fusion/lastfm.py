@@ -1,3 +1,5 @@
+# Last.fm integration — fetches listener counts and genre tags per artist to re-rank candidates.
+# Caches results to artist_cache.json so repeated queries don't re-hit the API.
 import json
 import numpy as np
 import requests

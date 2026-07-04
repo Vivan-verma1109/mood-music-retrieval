@@ -1,3 +1,4 @@
+# One-time data cleaning script — loads the raw Kaggle dataset and drops/renames columns for downstream use.
 import pandas as pd
 
 df = pd.read_csv('archive/songs_with_attributes_and_lyrics.csv')

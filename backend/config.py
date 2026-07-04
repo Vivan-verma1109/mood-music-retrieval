@@ -1,12 +1,20 @@
+# Shared config — cluster descriptions for semantic routing, genre alias lists, and genre→cluster mappings.
+# cluster_descriptions are embedded at startup in loader.py and used for cosine-sim cluster routing in fusion.py.
+
 cluster_descriptions = {
-    0: "acoustic and mellow, warm and intimate, background music for relaxing or studying, folk and singer-songwriter, cozy and unhurried",
-    1: "happy and euphoric, high energy dance music, upbeat pop, feel-good and celebratory, electronic and bright",
-    2: "aggressive and intense, hard rock and metal, dark and powerful, driving and relentless, raw and heavy",
-    3: "moody and brooding, mid-tempo and atmospheric, bittersweet, neither loud nor quiet, contemplative and cloudy",
-    4: "upbeat and warm, feel-good acoustic pop, sunny and optimistic, half-acoustic half-electronic, easy and light",
-    5: "high energy and driving, electric and hard-hitting, hip-hop and rock energy, intense without being dark, urgent and forward-moving",
-    6: "quiet and deeply sad, acoustic and sparse, lonely and introspective, slow and somber, heartbreak and grief",
-    7: "dark and groovy, late-night electronic, trap and R&B, brooding with a steady pulse, atmospheric and nocturnal",
+    0:  "hip-hop and rap, trap and urban, modern beats and rhythmic flow, drake and kendrick energy",
+    1:  "reggae, latin, and r&b grooves, warm and danceable, laid-back energy",
+    2:  "classic acoustic and country, folk and blues, storytelling and warm, old-school songwriting",
+    3:  "dark electronic and post-punk, club and dance, brooding and rhythmic, underground groove",
+    4:  "metal and hardcore, aggressive and loud, fast and heavy, punk and extreme music",
+    5:  "latin and world music, warm and celebratory, danceable and feel-good, reggae and tropical",
+    6:  "soft pop and soul ballads, emotional and warm, mid-tempo, romantic and heartfelt",
+    7:  "extreme metal and black metal, dark and intense, aggressive instrumentals, doom and death",
+    8:  "world music and latin folk, acoustic and warm, diverse and rootsy, organic feel",
+    9:  "jazz and classical, quiet and instrumental, introspective and sophisticated, ambient and acoustic",
+    10: "indie rock and alternative, guitar-driven, mid-energy, punchy and melodic",
+    11: "acoustic ballads and soft folk, intimate and gentle, classical vocals, quiet and beautiful",
+    12: "upbeat pop and indie pop, light and catchy, feel-good electronic, bright and energetic",
 }
 
 _HIP_HOP = ["hip hop", "hiphop", "hip-hop", "rap", "trap", "drill", "boom bap", "conscious hip hop"]
@@ -42,21 +50,21 @@ GENRE_ALIASES = {
 
                                 
 GENRE_CLUSTERS = {
-    "hiphop": [5, 7],
-    "rap":    [5, 7],
-    "pop":    [1, 4],
-    "lofi":   [0],
-    "rnb":    [7],
-    "electronic": [1, 7],
-    "rock":   [2, 5],
-    "metal":  [2],
-    "jazz":   [0, 3],
-    "classical": [0],
-    "country": [0, 4],
-    "latin":  [1, 4],
-    "reggae": [4],
-    "emo":    [3, 6],
-    "punk":   [2, 5],
-    "kpop":   [1, 4],
-    "anime":  [1, 3],
+    "hiphop":     [0, 3],
+    "rap":        [0, 3],
+    "pop":        [6, 12],
+    "lofi":       [0, 3],
+    "rnb":        [1, 6],
+    "electronic": [3, 12],
+    "rock":       [4, 10],
+    "metal":      [4, 7],
+    "jazz":       [9],
+    "classical":  [9, 11],
+    "country":    [2],
+    "latin":      [1, 5],
+    "reggae":     [1, 5],
+    "emo":        [4, 10],
+    "punk":       [4, 10],
+    "kpop":       [6, 12],
+    "anime":      [6, 12],
 }

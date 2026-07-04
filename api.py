@@ -1,3 +1,5 @@
+# FastAPI server — exposes the /query endpoint that the React frontend calls.
+# Receives mood text + filters, runs the full retrieval pipeline, returns ranked songs.
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel

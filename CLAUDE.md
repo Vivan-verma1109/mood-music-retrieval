@@ -21,7 +21,7 @@ User mood query (text) + optional genre / language / artist filters
         ↓
    SBERT embedding
         ↓
-  cluster routing (genre → GENRE_CLUSTERS, or keyword match, or lyric centroid fallback)
+  cluster routing (genre → GENRE_CLUSTERS, or semantic SBERT cosine sim against cluster descriptions)
         ↓
   candidate song pool filtered by language + artist
         ↓
@@ -37,10 +37,10 @@ User mood query (text) + optional genre / language / artist filters
 ## Pipeline Stages
 
 ### Stage 1 — Emotional Clustering
-- Input: audio features (valence, energy, tempo, acousticness, danceability)
-- Method: KMeans (8 clusters) on normalized features
-- Output: 8 clusters — Chill/Acoustic, Euphoric/Party, Angry/Intense, Moody/Melancholic, Sunny/Relaxed, Rap/Rock, Sad/Introspective, Dark/R&B
-- Labels assigned manually after inspecting cluster centroids
+- Input: audio features (valence, energy, tempo, acousticness, danceability, speechiness, instrumentalness)
+- Method: KMeans (13 clusters) on normalized features
+- Output: 13 clusters — Hip-Hop/Rap (0), Reggae/Latin/R&B (1), Country/Folk/Blues (2), Dark Electronic (3), Metal/Hardcore (4), Latin/World (5), Soft Pop/Soul (6), Extreme Metal (7), World/Roots (8), Jazz/Classical (9), Indie Rock/Alt (10), Acoustic Ballads (11), Upbeat Pop (12)
+- Labels assigned manually after inspecting centroids and sampling 50 songs per cluster
 
 ### Stage 2 — Lyric Embedding
 - Input: lyrics text per song
@@ -55,10 +55,9 @@ User mood query (text) + optional genre / language / artist filters
 - File kept at archive/projection.pkl for future MLP experiments
 
 ### Stage 4 — Fusion & Ranking
-- Cluster routing (three strategies, in priority order):
-  1. UI genre → `GENRE_CLUSTERS` direct lookup (e.g. "hiphop" → clusters [5, 7])
-  2. Keyword match against `cluster_tags` in config.py
-  3. Lyric centroid fallback: cosine sim between query embedding and per-cluster centroids
+- Cluster routing (two strategies, in priority order):
+  1. UI genre → `GENRE_CLUSTERS` direct lookup (e.g. "hiphop" → clusters [0, 3])
+  2. Semantic SBERT cosine sim: query embedding vs cluster description embeddings (13×768), top 3 clusters selected
 - Language filter: ISO 639-1 code matched against `language` column (langdetect)
 - Artist filter: substring match against `artists` column (case-insensitive)
 - Candidate scoring: α * audio_sim + (1-α) * lyric_sim (α=0.3)
@@ -85,6 +84,8 @@ User mood query (text) + optional genre / language / artist filters
 - tempo — BPM
 - acousticness — how acoustic vs. electronic (0 to 1)
 - danceability — how suitable for dancing (0 to 1)
+- speechiness — detects spoken words; high = rap/spoken word, low = singing (0 to 1)
+- instrumentalness — predicts absence of vocals; high = instrumental track (0 to 1)
 
 ## API Notes
 - **Spotify Web API (Feb 2026)**: batch tracks endpoint (GET /tracks) removed, popularity field removed. Used only for availability check via search.
@@ -94,21 +95,22 @@ User mood query (text) + optional genre / language / artist filters
 
 ## Milestones
 1. [x] Dataset acquired and columns inspected
-2. [x] Audio features normalized, emotional clusters built and labeled (8 KMeans clusters)
+2. [x] Audio features normalized, emotional clusters built and labeled (8 KMeans clusters → retrained to 13 with 7 features)
 3. [x] Lyrics embedded with SBERT on GPU, FAISS index built
 4. [x] Projection layer trained (Ridge 768→5) — dropped in favor of lyric centroid routing
 5. [x] End-to-end query → cluster filter → lyric rerank working
 6. [x] Codebase restructured into backend/ folder
 7. [x] FastAPI api.py at root exposing /query endpoint
 8. [x] React frontend in frontend/ with inputs for mood, artist, genre, language, top_k
-9. [ ] Restore audio similarity signal (KMeans centroid cosine sim in audio space)
-10. [ ] Qualitative evaluation + fusion weight tuning
-11. [ ] Genre hard filter (Last.fm track.getTopTags) — replace current score boost
-12. [ ] Spotify OAuth + PostgreSQL (SQLAlchemy) for token storage
-13. [ ] Spotify playlist export (POST /me/playlists)
-14. [ ] Filter out user's liked songs from results
-15. [ ] Release year / era filtering
-16. [ ] Semantic cluster routing (SBERT embeddings of cluster descriptions, replaces keyword lists)
+9. [x] Retrained KMeans with 7 features (added speechiness + instrumentalness), 13 clusters
+10. [x] Semantic cluster routing (SBERT embeddings of cluster descriptions, top 3 clusters)
+11. [ ] Qualitative evaluation + fusion weight tuning
+12. [ ] Genre hard filter (Last.fm track.getTopTags) — replace current score boost
+13. [ ] Spotify OAuth + PostgreSQL (SQLAlchemy) for token storage
+14. [ ] Spotify playlist export (POST /me/playlists)
+15. [ ] Filter out user's liked songs from results
+16. [ ] Release year / era filtering
+17. [ ] Artist filter bypasses cluster routing entirely
 
 ---
 
@@ -125,6 +127,9 @@ User mood query (text) + optional genre / language / artist filters
 - **React over Gradio**: chosen for long-term flexibility — Spotify OAuth, playlist export, liked songs filter all require a real frontend.
 - **PostgreSQL over SQLite**: chosen for flexibility as the project grows (user data, playlists, query history).
 - **Not collaborative filtering**: no user interaction data; content-based + query-based only.
+- **13 clusters over 8**: added speechiness + instrumentalness to feature set, allowing clean separation of hip-hop, metal, jazz/classical, and instrumental clusters. Silhouette analysis showed more headroom with 7 features.
+- **Semantic cluster routing over keyword matching**: cluster_tags keyword lists missed synonyms and paraphrases. SBERT descriptions encode the full semantic neighborhood; top 3 clusters selected by cosine sim.
+- **Top 3 clusters**: cluster 0 is a broad catch-all; selecting 3 instead of 2 gives better coverage without bloating the candidate pool.
 
 ## Stack
 - **Backend**: FastAPI (Python), PostgreSQL + SQLAlchemy (planned, for OAuth token storage)

@@ -1,3 +1,5 @@
+# Startup loader — runs once when the server starts and loads all heavy assets into memory.
+# Exports: df, embeddings, X_scaled, model, cluster_ids, cluster_centroids, audio_centroids, cluster_desc_embeddings.
 import os
 import numpy as np
 import pandas as pd
