@@ -91,18 +91,29 @@ def rerank_by_listeners(pool_idx, pool_scores, df, top_k, popularity_weight = 0.
     listeners = listeners[keep]
     tags = [tags[i] for i in np.where(keep)[0]]
 
-    LISTENER_CAP = 20_000_000
+    LISTENER_CAP = 10_000_000
     listeners_norm = np.minimum(listeners, LISTENER_CAP) / LISTENER_CAP
 
     final_score = pool_scores * (1 + popularity_weight * listeners_norm)
+    genre_boost_fired = [False] * len(pool_idx)
     if genre_song or genre_penalty:
         for idx, tag in enumerate(tags):
             if genre_song and any(alias in tag for alias in genre_song):
-                final_score[idx] *= 3
+                final_score[idx] *= 5
+                genre_boost_fired[idx] = True
                 print(f"  Genre boost: {df.loc[pool_idx[idx], 'name']}")
             elif genre_penalty and any(alias in tag for alias in genre_penalty):
                 final_score[idx] *= 0.3
                 print(f"  Genre penalty: {df.loc[pool_idx[idx], 'name']}")
     top_local = np.argsort(final_score)[::-1][:top_k]
 
-    return pool_idx[top_local], listeners[top_local], final_score[top_local]
+    song_meta = [
+        {
+            "fused_score": float(pool_scores[i]),
+            "listeners_norm": float(listeners_norm[i]),
+            "genre_boost_fired": genre_boost_fired[i],
+        }
+        for i in top_local
+    ]
+
+    return pool_idx[top_local], listeners[top_local], final_score[top_local], song_meta

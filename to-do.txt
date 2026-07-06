@@ -63,3 +63,7 @@ Filter by release year / era
 
 Learned fusion weights
 - small supervised layer to tune alpha if labeled mood->playlist data exists
+
+Parallelize Last.fm fetches
+- rerank_by_listeners() fetches one artist at a time, bottlenecks on 50 sequential HTTP calls
+- use ThreadPoolExecutor to fire all requests concurrently

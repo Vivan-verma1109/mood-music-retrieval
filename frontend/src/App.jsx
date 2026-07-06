@@ -10,6 +10,8 @@ function App() {
     
     const [results, setResults] = useState([])
     const [loading, setLoading] = useState(false)
+    const [requestId, setRequestId] = useState(null)
+    const [rated, setRated] = useState(new Set())
 
     async function handleSubmit(e) {
         e.preventDefault()
@@ -25,12 +27,23 @@ function App() {
                 signal: controller.signal,
             })
             const data = await res.json()
-            setResults(data)
+            setRequestId(data.request_id)
+            setResults(data.results)
+            setRated(new Set())
         } finally {
             // always re-enable the button, whether request succeeded, failed, or timed out
             clearTimeout(timeout)
             setLoading(false)
         }
+    }
+
+    async function submitFeedback(songId, rating) {
+        setRated(prev => new Set(prev).add(songId))
+        fetch('http://localhost:8000/feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ request_id: requestId, song_id: songId, rating }),
+        })
     }
 
     return (
@@ -84,6 +97,7 @@ function App() {
                         <tr>
                             <th>Song</th>
                             <th>Artist</th>
+                            <th>Feedback</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -91,6 +105,12 @@ function App() {
                             <tr key={i}>
                                 <td>{r.name}</td>
                                 <td>{r.artists}</td>
+                                <td>
+                                    <button onClick={() => submitFeedback(r.song_id, 'great')} disabled={rated.has(r.song_id)}>🔥</button>
+                                    <button onClick={() => submitFeedback(r.song_id, 'good')} disabled={rated.has(r.song_id)}>👍</button>
+                                    <button onClick={() => submitFeedback(r.song_id, 'bad')} disabled={rated.has(r.song_id)}>👎</button>
+                                    <button onClick={() => submitFeedback(r.song_id, 'terrible')} disabled={rated.has(r.song_id)}>🗑️</button>
+                                </td>
                             </tr>
                         ))}
                     </tbody>

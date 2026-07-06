@@ -59,14 +59,18 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3, language = No
 
     # embed query
     query_emb = model.encode([mood_text], normalize_embeddings=True).astype('float32')
+    routing_strategy = ""
 
     if genre and genre in GENRE_CLUSTERS:
         cluster_ids_matched = GENRE_CLUSTERS[genre]
+        routing_strategy = "genre_lookup"
     elif artist:
         cluster_ids_matched = cluster_ids
+        routing_strategy = "artist_bypass"
     else:
         sims = (cluster_desc_embeddings @ query_emb.T).squeeze()
         cluster_ids_matched = np.array(cluster_ids)[np.argsort(sims)[::-1][:3]].tolist()
+        routing_strategy = "semantic_sbert"
 
     artists = [artist] if artist else None
     # resolve genre string to Last.fm tag aliases for the boost step
@@ -100,6 +104,11 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3, language = No
     # fuse both signals — alpha controls audio vs lyric weight (0.3 = 30% audio, 70% lyrics)
     score = alpha * audio_sim + (1 - alpha) * lyric_sim
 
+    sim_lookup = {
+        int(candidate_idx[i]): (float(lyric_sim[i]), float(audio_sim[i]))
+        for i in range(len(candidate_idx))
+    }
+
     # take top pool, re-rank by listener count
     top_pool = np.argsort(score)[::-1][:pop_candidates]
     pool_idx = candidate_idx[top_pool]
@@ -109,7 +118,7 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3, language = No
     pool_idx, pool_scores = cap_artists(pool_idx, pool_scores, df, max_per = 2)
 
     print(f"Fetching listener counts for top {pop_candidates} candidates...")
-    top_global, listeners, final_scores = rerank_by_listeners(pool_idx, pool_scores, df, top_k=20, genre_song=genre_aliases, genre_penalty=genre_penalty)
+    top_global, listeners, final_scores, song_meta = rerank_by_listeners(pool_idx, pool_scores, df, top_k=20, genre_song=genre_aliases, genre_penalty=genre_penalty)
 
     results = df.loc[top_global, ['name', 'artists', 'mood', 'valence', 'energy']].copy()
     results['listeners'] = listeners.astype(int)
@@ -120,10 +129,33 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3, language = No
     results['_artist_lower'] = results['artists'].str.lower().str.strip()
     results = results.drop_duplicates(subset=['_name_lower', '_artist_lower'])
     results = results.drop(columns=['_name_lower', '_artist_lower'])
+    results['song_id'] = results.index.astype(str)
 
     print("Verifying Spotify availability...")
     results = filter_available(results, top_k=top_k)
-    return results
+
+    per_song = {}
+    for rank_pos, (df_idx, meta) in enumerate(zip(top_global, song_meta)):
+        song_id = str(df_idx)
+        lyric_sim_val, audio_sim_val = sim_lookup.get(int(df_idx), (0.0, 0.0))
+        per_song[song_id] = {
+            "rank_position": rank_pos,
+            "lyric_sim": lyric_sim_val,
+            "audio_sim": audio_sim_val,
+            "fused_score": meta["fused_score"],
+            "listeners_norm": meta["listeners_norm"],
+            "genre_boost_fired": meta["genre_boost_fired"],
+            "final_score": float(final_scores[rank_pos]),
+            "alpha_at_rating": alpha,
+            "listener_weight": 0.3,
+            "boost_multiplier": 5.0,
+            "clusters": cluster_ids_matched,
+            "routing_strategy": routing_strategy,
+            "genre": genre,
+            "query": mood_text,
+        }
+
+    return results, per_song
 
 
 if __name__ == '__main__':
