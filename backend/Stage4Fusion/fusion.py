@@ -55,7 +55,7 @@ Args:
 Returns:
     DataFrame: Ranked songs with columns name, artists, mood, valence, energy, listeners, score.
 """
-def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3, language = None, genre = None, artist = None):
+def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3, language = None, genre = None, artist = None, check_spotify = True):
 
     # embed query
     query_emb = model.encode([mood_text], normalize_embeddings=True).astype('float32')
@@ -131,8 +131,9 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3, language = No
     results = results.drop(columns=['_name_lower', '_artist_lower'])
     results['song_id'] = results.index.astype(str)
 
-    print("Verifying Spotify availability...")
-    results = filter_available(results, top_k=top_k)
+    if check_spotify:
+        print("Verifying Spotify availability...")
+        results = filter_available(results, top_k=top_k)
 
     per_song = {}
     for rank_pos, (df_idx, meta) in enumerate(zip(top_global, song_meta)):
