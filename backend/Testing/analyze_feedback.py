@@ -1,8 +1,8 @@
 import json
 from collections import defaultdict
 
-FEEDBACK_FILE = 'backend/feedback.jsonl'
-RANKINGS_FILE = 'rankings.jsonl'
+FEEDBACK_FILE = 'backend/Testing/feedback.jsonl'
+RANKINGS_FILE = 'backend/Testing/rankings.jsonl'
 
 SCORE = {'great': 1.0, 'good': 0.75, 'bad': 0.25, 'terrible': 0.0}
 
