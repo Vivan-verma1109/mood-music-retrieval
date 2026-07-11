@@ -26,10 +26,6 @@ Expand cluster search
 - better coverage for queries that sit on the border between moods
 IN PROGRESS
 
-
-NOT STARTED
-
-#1 PRIORITY
 Semantic cluster routing
 - replace cluster_tags keyword matching with SBERT embedding of cluster labels/descriptions
 - cosine similarity between query embedding and cluster description embeddings to pick clusters
@@ -39,6 +35,22 @@ Semantic cluster routing
 Artist filter bypasses cluster routing
 - if artist is passed, skip cluster routing entirely and use all songs as candidate pool
 - filter by artist first, then score by lyric + audio sim directly
+
+NOT STARTED
+
+
+
+Rewrite the 13 cluster descriptions — the one high-leverage fix. Feed Claude Code all 13 at once with: make them maximally distinguishable from each other (kill the 6/11 and 1/5 twins), and include usage contexts per cluster (workout/gym for 4, study/focus for 9, party/pregame for 12, late-night driving for 3, etc.). Re-embed, done — it's a config change, no retraining.
+Rerun eval_batch on the same 18 queries, rate the new songs that appear (old ratings still count — that's why pooled labels were worth it). Compare against tonight's baseline. Target: context queries (lift heavy, bbq, feels, chill driving) move from 0–25% toward 50%+. That before/after number is the payoff.
+While in there: instrumentalness filter for "no lyrics" queries — threshold on a feature you already have, 15 minutes.
+
+Backlog (only if time permits before recruiting peak):
+
+Artist detection in free text (the poison-token fix) — real feature, well-scoped, not urgent
+Data-derived cluster embeddings (mean of member lyric embeddings) — the fallback if rewritten descriptions don't move the number
+OAuth/playlist export — product polish, zero interview value, lowest priority
+
+
 
 
 Exclude user's liked songs
