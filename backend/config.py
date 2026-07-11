@@ -2,19 +2,19 @@
 # cluster_descriptions are embedded at startup in loader.py and used for cosine-sim cluster routing in fusion.py.
 
 cluster_descriptions = {
-    0:  "hip-hop and rap, trap and urban, modern beats and rhythmic flow, drake and kendrick energy",
-    1:  "reggae, latin, and r&b grooves, warm and danceable, laid-back energy",
-    2:  "classic acoustic and country, folk and blues, storytelling and warm, old-school songwriting",
-    3:  "dark electronic and post-punk, club and dance, brooding and rhythmic, underground groove",
-    4:  "metal and hardcore, aggressive and loud, fast and heavy, punk and extreme music",
-    5:  "latin and world music, warm and celebratory, danceable and feel-good, reggae and tropical",
-    6:  "soft pop and soul ballads, emotional and warm, mid-tempo, romantic and heartfelt",
-    7:  "extreme metal and black metal, dark and intense, aggressive instrumentals, doom and death",
-    8:  "world music and latin folk, acoustic and warm, diverse and rootsy, organic feel",
-    9:  "jazz and classical, quiet and instrumental, introspective and sophisticated, ambient and acoustic",
-    10: "indie rock and alternative, guitar-driven, mid-energy, punchy and melodic",
-    11: "acoustic ballads and soft folk, intimate and gentle, classical vocals, quiet and beautiful",
-    12: "upbeat pop and indie pop, light and catchy, feel-good electronic, bright and energetic",
+    0:  "Mixed moody popular music. A broad blend of downcast pop, alternative, and atmospheric rock without one defining sound. Subdued and mid tempo. No specific activity or setting.",
+    1:  "Laid back grooves and rhythms. Reggae, hip hop, rap, funk, soul, and smooth R&B with relaxed danceable rhythms and easygoing swagger. Cruising with the windows down, kicking back with friends, smoke sessions, chill evening hangouts.",
+    2:  "Warm vintage acoustic classics. Crooners, classic country, oldies, tango, and timeless standards with a relaxed, nostalgic, easygoing feel. Sunday morning coffee, cooking dinner, lazy afternoons, music your grandparents loved.",
+    3:  "Energetic instrumental electronic. Techno, trance, house, and synth-driven dance music with pulsing beats and few or no vocals. Night driving, raves, coding sessions with driving beats, late night energy.",
+    4:  "Aggressive mainstream metal and hard rock. Distorted guitars, pounding drums, powerful sung or shouted vocals, dark and intense. Lifting heavy at the gym, hard workouts, blowing off steam, rage energy.",
+    5:  "Euphoric party pop and dance. Upbeat reggaeton, dance pop, kpop, and feel-good hits with high energy and maximum positivity. Pregaming, house parties, clubbing, dancing with friends, getting hyped.",
+    6:  "Melancholy modern songs with feeling. Wistful singer-songwriter, emotional pop, and bittersweet ballads, sad but not silent. Rainy days, processing a breakup, up late in your feelings, journaling.",
+    7:  "Extreme and harsh heavy music. Death metal, grindcore, black metal, and industrial with growled vocals, blast beats, and crushing intensity. The heaviest end of heavy, mosh pits, pure aggression.",
+    8:  "Feel-good roots and tropical grooves. Salsa, forró, classic rock and roll, and sunny acoustic music that makes you move. Backyard bbq, cookouts, beach days, summer hangouts, family gatherings.",
+    9:  "Calm quiet instrumental. Ambient, solo piano, gentle acoustic instrumentals, and meditative soundscapes with little or no singing. Studying, deep focus, reading, meditation, falling asleep.",
+    10: "Fast loud punk and ska. Pop punk, skate punk, and high tempo rock with shouted choruses and relentless speed. Running, cardio, skateboarding, driving fast on the highway.",
+    11: "Hushed timeless ballads and torch songs. Quiet jazz standards, sad country, opera, and intimate vocal performances, slow and sparse. Candlelit evenings, slow dancing, quiet heartbreak, winding down alone.",
+    12: "High energy mainstream rock and pop crossover. Energetic radio rock, pop rock, and upbeat anthems with big production. Keeping momentum going, upbeat background energy.",
 }
 
 _HIP_HOP = ["hip hop", "hiphop", "hip-hop", "rap", "trap", "drill", "boom bap", "conscious hip hop"]
