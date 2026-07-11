@@ -86,6 +86,16 @@ for i in range(13):
 if not found:
     print("  None — all pairs below threshold.")
 
+# --- Twin pair headline numbers ---
+print("\n=== Twin pair similarity: before vs after ===")
+TWIN_PAIRS = [(6, 11), (1, 5)]
+for i, j in TWIN_PAIRS:
+    new_sim = sim_matrix[i][j]
+    old_name = f"{i} vs {j} (old)"
+    old_sim = baselines.get(old_name, float('nan'))
+    direction = "DOWN" if new_sim < old_sim else "UP"
+    print(f"  Cluster {i} vs {j}:  old={old_sim:.4f}  new={new_sim:.4f}  ({direction})")
+
 # --- Sanity routing ---
 print("\n=== Sanity Routing — top 3 clusters per query ===")
 EXPECTED = {
@@ -94,6 +104,10 @@ EXPECTED = {
     "songs for a summer bbq": 8,
     "pregame playlist": 5,
     "melancholic": 6,
+    "sad songs for a rainy day": 6,
+    "sad indie acoustic": 6,
+    "spanish party music": 5,
+    "90s hip hop vibes": 1,
 }
 for q in EVAL_QUERIES:
     qe = model.encode(q, normalize_embeddings=True)

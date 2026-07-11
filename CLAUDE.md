@@ -39,8 +39,8 @@ User mood query (text) + optional genre / language / artist filters
 ### Stage 1 — Emotional Clustering
 - Input: audio features (valence, energy, tempo, acousticness, danceability, speechiness, instrumentalness)
 - Method: KMeans (13 clusters) on normalized features
-- Output: 13 clusters — Hip-Hop/Rap (0), Reggae/Latin/R&B (1), Country/Folk/Blues (2), Dark Electronic (3), Metal/Hardcore (4), Latin/World (5), Soft Pop/Soul (6), Extreme Metal (7), World/Roots (8), Jazz/Classical (9), Indie Rock/Alt (10), Acoustic Ballads (11), Upbeat Pop (12)
-- Labels assigned manually after inspecting centroids and sampling 50 songs per cluster
+- Output: 13 clusters — Mixed Moody Catch-all (0), Laid-Back Grooves/Reggae/Hip-Hop (1), Vintage Acoustic Classics (2), Energetic Electronic/Instrumental (3), Mainstream Metal/Hard Rock (4), Euphoric Party Pop/Dance (5), Melancholy Modern Songs (6), Extreme/Harsh Heavy (7), Feel-Good Roots/Tropical (8), Calm Quiet Instrumental (9), Fast Loud Punk/Ska (10), Hushed Ballads/Torch Songs (11), High-Energy Rock/Pop Crossover (12)
+- Labels assigned manually after inspecting centroids and sampling songs per cluster; cluster descriptions rewritten July 2026 as routing targets (see Decisions)
 
 ### Stage 2 — Lyric Embedding
 - Input: lyrics text per song
@@ -104,13 +104,17 @@ User mood query (text) + optional genre / language / artist filters
 8. [x] React frontend in frontend/ with inputs for mood, artist, genre, language, top_k
 9. [x] Retrained KMeans with 7 features (added speechiness + instrumentalness), 13 clusters
 10. [x] Semantic cluster routing (SBERT embeddings of cluster descriptions, top 3 clusters)
-11. [ ] Qualitative evaluation + fusion weight tuning
-12. [ ] Genre hard filter (Last.fm track.getTopTags) — replace current score boost
-13. [ ] Spotify OAuth + PostgreSQL (SQLAlchemy) for token storage
-14. [ ] Spotify playlist export (POST /me/playlists)
-15. [ ] Filter out user's liked songs from results
-16. [ ] Release year / era filtering
-17. [ ] Artist filter bypasses cluster routing entirely
+11. [x] Blind eval — 170 hand-labeled ratings across 18 queries at 4 alpha values; alpha=0.3 confirmed, closed
+12. [x] Cluster descriptions rewritten as routing targets — activity/context vocab added, 6/11 and 1/5 twin pairs fixed
+13. [ ] Validate description rewrite: pairwise cosine matrix + sanity routing (backend/Testing/validate_descriptions.py)
+14. [ ] Rerun eval_batch on same 18 queries, rate new songs only, record before/after precision on context queries
+15. [ ] Instrumentalness threshold filter for "no lyrics" queries
+16. [ ] Genre hard filter (Last.fm track.getTopTags) — replace current score boost
+17. [ ] Spotify OAuth + PostgreSQL (SQLAlchemy) for token storage
+18. [ ] Spotify playlist export (POST /me/playlists)
+19. [ ] Filter out user's liked songs from results
+20. [ ] Release year / era filtering
+21. [ ] Artist filter bypasses cluster routing entirely
 
 ---
 
