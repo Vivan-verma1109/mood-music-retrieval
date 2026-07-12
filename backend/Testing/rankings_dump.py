@@ -1,3 +1,5 @@
+# Runs all 18 queries x 4 alpha values through the pipeline and writes ranked song IDs to rankings.jsonl (used by analyze_feedback.py).
+
 import json
 import os
 import sys

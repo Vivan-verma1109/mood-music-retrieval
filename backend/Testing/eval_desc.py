@@ -1,40 +1,46 @@
+# Blind rater for description rewrite validation: runs 18 queries at alpha=0.3, auto-skips already-rated songs, records new ratings to 
+# feedback.jsonl.
+
+
 import json
 import time
 import random
 import sys
 import os
 
-sys.path.insert(0, os.path.dirname(__file__))
-
 from backend.Stage4Fusion.fusion import query
 
+ALPHA = 0.3
+
 QUERIES = [
-    # vibe/mood, phrased how people actually type
     "sad songs for a rainy day",
     "songs to lift heavy to",
     "chill songs for driving at night",
     "music for when im in my feels",
     "happy songs to start the morning",
-    # artist-anchored (exercises artist bypass + "sounds like" semantics)
     "something drake like",
     "stuff that sounds like frank ocean",
     "sza type songs",
-    # activity/context
     "study music no lyrics",
     "songs for a summer bbq",
     "pregame playlist",
-    # genre-flavored (exercises genre lookup path)
     "rnb slow jams",
     "sad indie acoustic",
     "hard trap beats",
     "90s hip hop vibes",
-    # curveballs / known weak spots
-    "melancholic",              # the Ridge killer, keep it
-    "songs about heartbreak but upbeat",   # cross-mood, tests top-3 routing
-    "spanish party music",      # language filter path
+    "melancholic",
+    "songs about heartbreak but upbeat",
+    "spanish party music",
 ]
-ALPHAS = [0.0, 0.15, 0.3, 0.5]
-FEEDBACK_FILE = os.path.join(os.path.dirname(__file__), 'backend', 'feedback.jsonl')
+
+FEEDBACK_FILE = os.path.join(os.path.dirname(__file__), 'feedback.jsonl')
+
+seen = set()
+if os.path.exists(FEEDBACK_FILE):
+    with open(FEEDBACK_FILE) as f:
+        for line in f:
+            r = json.loads(line)
+            seen.add((r['query'], str(r['song_id'])))
 
 def run():
     for mood_query in QUERIES:
@@ -42,22 +48,25 @@ def run():
         print(f"Query: {mood_query}")
         print(f"{'='*60}")
 
-        pooled = {}
-        for alpha in ALPHAS:
-            results, per_song = query(mood_query, top_k=10, pop_candidates=50, alpha=alpha)
-            for _, row in results.iterrows():
-                sid = row['song_id']
-                if sid not in pooled:
-                    pooled[sid] = (row, per_song.get(sid, {}))
+        results, per_song = query(mood_query, top_k=10, pop_candidates=50, alpha=ALPHA)
 
-        items = list(pooled.values())
+        items = list(results.iterrows())
         random.shuffle(items)
+        
+        new_items = []
+        for _, row in items:
+            if (mood_query, str(row['song_id'])) not in seen:
+                new_items.append(row)
 
-        print(f"\n{len(items)} songs to rate. f=great  g=good  b=bad  t=terrible  s=skip  q=next query\n")
+        if not new_items:
+            print("  all songs already rated, skipping query")
+            continue
+
+        print(f"\n{len(new_items)} new songs to rate. f=great  g=good  b=bad  t=terrible  s=skip  q=next query\n")
 
         rating_map = {'f': 'great', 'g': 'good', 'b': 'bad', 't': 'terrible'}
 
-        for row, meta in items:
+        for row in new_items:
             print(f"  {row['name']} — {row['artists']}")
             rating = None
             while rating not in ('f', 'g', 'b', 't', 's', 'q'):
@@ -69,8 +78,9 @@ def run():
                 continue
 
             record = {
-                **meta,
-                "song_id": row['song_id'],
+                **per_song.get(str(row['song_id']), {}),
+                "query": mood_query,
+                "song_id": str(row['song_id']),
                 "rating": rating_map[rating],
                 "timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
             }

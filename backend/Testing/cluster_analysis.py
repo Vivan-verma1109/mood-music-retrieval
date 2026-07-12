@@ -1,3 +1,4 @@
+# For each cluster: prints audio feature stats, top 20 artists by count, 25 nearest-centroid songs, and 25 random edge songs.
 import pandas as pd
 import numpy as np
 

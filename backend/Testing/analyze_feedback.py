@@ -1,3 +1,4 @@
+# Reads feedback.jsonl + rankings.jsonl and prints precision@10 by alpha/query, plus avg lyric_sim/audio_sim per rating label.
 import json
 from collections import defaultdict
 
