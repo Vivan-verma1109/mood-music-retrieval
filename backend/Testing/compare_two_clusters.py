@@ -4,15 +4,15 @@
 import numpy as np 
 import pandas as pd 
 import sys 
-from backend.Stage4Fusion.loader import df, X_scaled, cluster_ids
+from backend.Stage4Fusion.loader import df, X_scaled
 
 A = int(sys.argv[1])
 B = int(sys.argv[2])
 
 FEATURES = ["valence", "energy", "tempo", "acousticness", "danceability", "speechiness", "instrumentalness"]
 
-mask_a = cluster_ids == A
-mask_b = cluster_ids == B
+mask_a = df['cluster'] == A
+mask_b = df['cluster'] == B
 
 df_a = df[mask_a].copy()
 df_b = df[mask_b].copy()
@@ -27,6 +27,7 @@ print(f"\n{'='*60}")
 print(f"CLUSTER {A} vs CLUSTER {B} — Audio Centroids")
 print(f"{'='*60}")
 print(f"{'feature':<20} {'cluster '+str(A):>10} {'cluster '+str(B):>10} {'delta':>10}")
+
 for i, feat in enumerate(FEATURES):
     val_a = centroid_a[i]
     val_b = centroid_b[i]

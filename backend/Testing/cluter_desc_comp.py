@@ -3,7 +3,7 @@
 
 import numpy as np 
 from sentence_transformers import SentenceTransformer
-from backend.config import cluster_descriptions
+from backend.config import cluster_descriptions, cluster_descriptions_old
 
 model = SentenceTransformer("paraphrase-multilingual-mpnet-base-v2")
 ids = sorted(cluster_descriptions.keys())
@@ -55,3 +55,13 @@ for r in range(len(ids)):
     second = row[1]
     gap = nearest[1] - second[1]
     print(f"  cluster {ids[r]}: nearest={nearest[0]} ({nearest[1]:.3f}), second={second[0]} ({second[1]:.3f}), gap={gap:.3f}")
+
+old_texts = [cluster_descriptions_old[i] for i in ids]
+old_embs = model.encode(old_texts, normalize_embeddings=True)
+old_sim = old_embs @ old_embs.T
+
+print("\n=== Twin pair similarity: old vs new ===")
+for i, j in [(6, 11), (1, 5), (4, 7), (1, 8)]:
+    o = old_sim[i][j]
+    n = sim[i][j]
+    print(f"  {i} vs {j}:  old={o:.4f}  new={n:.4f}  ({'DOWN' if n < o else 'UP'})")
