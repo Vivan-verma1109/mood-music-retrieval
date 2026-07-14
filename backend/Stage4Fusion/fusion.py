@@ -55,7 +55,7 @@ Args:
 Returns:
     DataFrame: Ranked songs with columns name, artists, mood, valence, energy, listeners, score.
 """
-def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3, language = None, genre = None, artist = None, check_spotify = True):
+def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3, language = None, genre = None, artist = None, check_spotify = True, desc_embeddings = None):
 
     # embed query
     query_emb = model.encode([mood_text], normalize_embeddings=True).astype('float32')
@@ -68,7 +68,8 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3, language = No
         cluster_ids_matched = cluster_ids
         routing_strategy = "artist_bypass"
     else:
-        sims = (cluster_desc_embeddings @ query_emb.T).squeeze()
+        _desc_embeddings = desc_embeddings if desc_embeddings is not None else cluster_desc_embeddings
+        sims = (_desc_embeddings @ query_emb.T).squeeze()
         cluster_ids_matched = np.array(cluster_ids)[np.argsort(sims)[::-1][:3]].tolist()
         routing_strategy = "semantic_sbert"
 

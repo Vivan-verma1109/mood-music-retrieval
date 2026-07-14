@@ -1,11 +1,11 @@
 # Compares binary precision before vs after description rewrite, split by timestamp.
 # Before = July 6-9 ratings at alpha=0.3. After = July 13 ratings.
-# Run as: python3 -m backend.Testing.analyze_feedback_descriptions
+# Run as: python -m backend.Testing.analysis.analyze_feedback_descriptions
 
 import json
 from collections import defaultdict
 
-FEEDBACK_FILE = 'backend/Testing/feedback.jsonl'
+FEEDBACK_FILE = 'backend/Testing/data/feedback.jsonl'
 CUTOFF = '2026-07-13T00:00:00Z'
 
 before = defaultdict(list)
@@ -14,7 +14,7 @@ after = defaultdict(list)
 with open(FEEDBACK_FILE) as f:
     for line in f:
         r = json.loads(line)
-        if r.get('alpha') != 0.3:
+        if r.get('alpha_at_rating') != 0.3:
             continue
         score = 1 if r['rating'] in ('great', 'good') else 0
         q = r['query']

@@ -35,7 +35,7 @@ QUERIES = [
     "spanish party music",      # language filter path
 ]
 ALPHAS = [0.0, 0.15, 0.3, 0.5]
-FEEDBACK_FILE = os.path.join(os.path.dirname(__file__), 'backend', 'feedback.jsonl')
+FEEDBACK_FILE = os.path.join(os.path.dirname(__file__), '..', 'data', 'feedback.jsonl')
 
 def run():
     for mood_query in QUERIES:

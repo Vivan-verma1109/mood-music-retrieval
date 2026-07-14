@@ -30,7 +30,7 @@ QUERIES = [
 ]
 
 ALPHAS = [0.0, 0.15, 0.3, 0.5]
-OUTPUT_FILE = os.path.join(os.path.dirname(__file__), 'rankings.jsonl')
+OUTPUT_FILE = os.path.join(os.path.dirname(__file__), '..', 'data', 'rankings.jsonl')
 
 if os.path.exists(OUTPUT_FILE):
     os.remove(OUTPUT_FILE)

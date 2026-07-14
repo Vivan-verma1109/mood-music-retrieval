@@ -33,7 +33,7 @@ QUERIES = [
     "spanish party music",
 ]
 
-FEEDBACK_FILE = os.path.join(os.path.dirname(__file__), 'feedback.jsonl')
+FEEDBACK_FILE = os.path.join(os.path.dirname(__file__), '..', 'data', 'feedback.jsonl')
 
 seen = set()
 if os.path.exists(FEEDBACK_FILE):
