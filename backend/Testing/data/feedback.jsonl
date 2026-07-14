@@ -265,3 +265,185 @@
 {"rank_position": 4, "lyric_sim": 0.5265358686447144, "audio_sim": 0.8873358964920044, "fused_score": 0.6347758769989014, "listeners_norm": 0.07443, "genre_boost_fired": true, "final_score": 3.2447489377820493, "alpha_at_rating": 0.3, "listener_weight": 0.3, "boost_multiplier": 5.0, "clusters": [10, 7, 1], "routing_strategy": "semantic_sbert", "genre": null, "query": "hard trap beats", "song_id": "663062", "rating": "great", "timestamp": "2026-07-13T03:02:06Z"}
 {"rank_position": 3, "lyric_sim": 0.5022085905075073, "audio_sim": 0.8975064754486084, "fused_score": 0.6207979917526245, "listeners_norm": 0.1581713, "genre_boost_fired": true, "final_score": 3.2512785968524756, "alpha_at_rating": 0.3, "listener_weight": 0.3, "boost_multiplier": 5.0, "clusters": [10, 7, 1], "routing_strategy": "semantic_sbert", "genre": null, "query": "hard trap beats", "song_id": "544138", "rating": "good", "timestamp": "2026-07-13T03:02:14Z"}
 {"rank_position": 7, "lyric_sim": 0.5090926289558411, "audio_sim": 0.9345303773880005, "fused_score": 0.6367239952087402, "listeners_norm": 0.0082175, "genre_boost_fired": true, "final_score": 3.1914683951896428, "alpha_at_rating": 0.3, "listener_weight": 0.3, "boost_multiplier": 5.0, "clusters": [10, 7, 1], "routing_strategy": "semantic_sbert", "genre": null, "query": "hard trap beats", "song_id": "9417", "rating": "good", "timestamp": "2026-07-13T03:02:21Z"}
+{"query": "hard trap beats", "song_id": "15848", "rating": "bad", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:51:24Z"}
+{"query": "stuff that sounds like frank ocean", "song_id": "655844", "rating": "bad", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:52:50Z"}
+{"query": "hard trap beats", "song_id": "71674", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:53:40Z"}
+{"query": "songs about heartbreak but upbeat", "song_id": "829985", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:53:52Z"}
+{"query": "90s hip hop vibes", "song_id": "649787", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:54:00Z"}
+{"query": "chill songs for driving at night", "song_id": "481431", "rating": "great", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:54:10Z"}
+{"query": "sad indie acoustic", "song_id": "374916", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:54:18Z"}
+{"query": "90s hip hop vibes", "song_id": "272297", "rating": "great", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:54:25Z"}
+{"query": "pregame playlist", "song_id": "456221", "rating": "terrible", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:54:41Z"}
+{"query": "pregame playlist", "song_id": "6371", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:54:48Z"}
+{"query": "sad indie acoustic", "song_id": "688101", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:55:14Z"}
+{"query": "spanish party music", "song_id": "636926", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:55:22Z"}
+{"query": "songs about heartbreak but upbeat", "song_id": "708408", "rating": "bad", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:55:36Z"}
+{"query": "music for when im in my feels", "song_id": "22280", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:55:46Z"}
+{"query": "study music no lyrics", "song_id": "782171", "rating": "bad", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:55:54Z"}
+{"query": "songs for a summer bbq", "song_id": "653496", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:56:08Z"}
+{"query": "study music no lyrics", "song_id": "680336", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:56:17Z"}
+{"query": "rnb slow jams", "song_id": "357444", "rating": "great", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:56:26Z"}
+{"query": "chill songs for driving at night", "song_id": "301195", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:56:37Z"}
+{"query": "happy songs to start the morning", "song_id": "666289", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:56:46Z"}
+{"query": "90s hip hop vibes", "song_id": "460804", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:56:55Z"}
+{"query": "90s hip hop vibes", "song_id": "272297", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:56:58Z"}
+{"query": "sad indie acoustic", "song_id": "829985", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:57:07Z"}
+{"query": "songs about heartbreak but upbeat", "song_id": "400629", "rating": "great", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:57:15Z"}
+{"query": "songs about heartbreak but upbeat", "song_id": "400629", "rating": "great", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:57:16Z"}
+{"query": "stuff that sounds like frank ocean", "song_id": "838799", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:57:27Z"}
+{"query": "hard trap beats", "song_id": "445143", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:57:36Z"}
+{"query": "sza type songs", "song_id": "373705", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:57:45Z"}
+{"query": "melancholic", "song_id": "446960", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:57:53Z"}
+{"query": "spanish party music", "song_id": "690643", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:58:01Z"}
+{"query": "spanish party music", "song_id": "380100", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:58:08Z"}
+{"query": "songs about heartbreak but upbeat", "song_id": "216163", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:58:20Z"}
+{"query": "90s hip hop vibes", "song_id": "470901", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:58:29Z"}
+{"query": "melancholic", "song_id": "817629", "rating": "great", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:58:37Z"}
+{"query": "spanish party music", "song_id": "416392", "rating": "great", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:58:45Z"}
+{"query": "stuff that sounds like frank ocean", "song_id": "631291", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:58:54Z"}
+{"query": "songs for a summer bbq", "song_id": "764785", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:59:06Z"}
+{"query": "spanish party music", "song_id": "587211", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:59:13Z"}
+{"query": "90s hip hop vibes", "song_id": "255184", "rating": "great", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:59:22Z"}
+{"query": "music for when im in my feels", "song_id": "38845", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:59:29Z"}
+{"query": "melancholic", "song_id": "442155", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:59:37Z"}
+{"query": "songs about heartbreak but upbeat", "song_id": "171743", "rating": "great", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:59:46Z"}
+{"query": "sza type songs", "song_id": "168519", "rating": "great", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T02:59:57Z"}
+{"query": "melancholic", "song_id": "456594", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:00:10Z"}
+{"query": "study music no lyrics", "song_id": "806178", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:00:20Z"}
+{"query": "90s hip hop vibes", "song_id": "79590", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:00:27Z"}
+{"query": "spanish party music", "song_id": "380100", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:00:33Z"}
+{"query": "spanish party music", "song_id": "435953", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:00:39Z"}
+{"query": "chill songs for driving at night", "song_id": "294348", "rating": "great", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:00:53Z"}
+{"query": "spanish party music", "song_id": "487665", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:01:02Z"}
+{"query": "stuff that sounds like frank ocean", "song_id": "645837", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:01:11Z"}
+{"query": "songs for a summer bbq", "song_id": "654124", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:02:08Z"}
+{"query": "songs about heartbreak but upbeat", "song_id": "829985", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:02:20Z"}
+{"query": "melancholic", "song_id": "442155", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:02:27Z"}
+{"query": "sad indie acoustic", "song_id": "701341", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:02:55Z"}
+{"query": "90s hip hop vibes", "song_id": "255184", "rating": "great", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:03:01Z"}
+{"query": "chill songs for driving at night", "song_id": "647503", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:03:11Z"}
+{"query": "songs for a summer bbq", "song_id": "654097", "rating": "great", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:03:20Z"}
+{"query": "sza type songs", "song_id": "651053", "rating": "terrible", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:03:31Z"}
+{"query": "90s hip hop vibes", "song_id": "724859", "rating": "great", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:03:37Z"}
+{"query": "songs about heartbreak but upbeat", "song_id": "632986", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:03:45Z"}
+{"query": "study music no lyrics", "song_id": "746435", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:03:56Z"}
+{"query": "songs about heartbreak but upbeat", "song_id": "840432", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:04:08Z"}
+{"query": "pregame playlist", "song_id": "371962", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:04:15Z"}
+{"query": "90s hip hop vibes", "song_id": "209483", "rating": "great", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:04:22Z"}
+{"query": "stuff that sounds like frank ocean", "song_id": "657377", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:04:28Z"}
+{"query": "spanish party music", "song_id": "442060", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:04:37Z"}
+{"query": "chill songs for driving at night", "song_id": "647503", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:04:45Z"}
+{"query": "hard trap beats", "song_id": "144431", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:05:14Z"}
+{"query": "sza type songs", "song_id": "252593", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:05:27Z"}
+{"query": "hard trap beats", "song_id": "728854", "rating": "great", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:05:35Z"}
+{"query": "melancholic", "song_id": "817629", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:05:43Z"}
+{"query": "spanish party music", "song_id": "197214", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:06:28Z"}
+{"query": "hard trap beats", "song_id": "296294", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:06:35Z"}
+{"query": "hard trap beats", "song_id": "357935", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:07:44Z"}
+{"query": "90s hip hop vibes", "song_id": "88006", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:07:51Z"}
+{"query": "sza type songs", "song_id": "768334", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:08:03Z"}
+{"query": "music for when im in my feels", "song_id": "302678", "rating": "terrible", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:08:17Z"}
+{"query": "melancholic", "song_id": "79689", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:08:23Z"}
+{"query": "melancholic", "song_id": "453911", "rating": "great", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:08:31Z"}
+{"query": "sza type songs", "song_id": "481234", "rating": "terrible", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:08:42Z"}
+{"query": "pregame playlist", "song_id": "655744", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:08:50Z"}
+{"query": "chill songs for driving at night", "song_id": "301195", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:08:59Z"}
+{"query": "sza type songs", "song_id": "317918", "rating": "terrible", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:09:07Z"}
+{"query": "pregame playlist", "song_id": "583678", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:09:14Z"}
+{"query": "melancholic", "song_id": "155290", "rating": "great", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:09:22Z"}
+{"query": "study music no lyrics", "song_id": "746435", "rating": "bad", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:09:33Z"}
+{"query": "study music no lyrics", "song_id": "39628", "rating": "great", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:09:39Z"}
+{"query": "songs for a summer bbq", "song_id": "601964", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:09:53Z"}
+{"query": "chill songs for driving at night", "song_id": "647502", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:10:04Z"}
+{"query": "hard trap beats", "song_id": "357939", "rating": "terrible", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:10:22Z"}
+{"query": "stuff that sounds like frank ocean", "song_id": "394197", "rating": "terrible", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:10:30Z"}
+{"query": "study music no lyrics", "song_id": "782171", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:10:42Z"}
+{"query": "songs about heartbreak but upbeat", "song_id": "188427", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:10:55Z"}
+{"query": "90s hip hop vibes", "song_id": "476502", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:11:09Z"}
+{"query": "spanish party music", "song_id": "272606", "rating": "great", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:11:18Z"}
+{"query": "sza type songs", "song_id": "277765", "rating": "bad", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:11:32Z"}
+{"query": "happy songs to start the morning", "song_id": "270468", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:11:44Z"}
+{"query": "melancholic", "song_id": "98672", "rating": "great", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:12:37Z"}
+{"query": "rnb slow jams", "song_id": "610990", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:12:52Z"}
+{"query": "spanish party music", "song_id": "416392", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:13:03Z"}
+{"query": "happy songs to start the morning", "song_id": "193634", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:13:16Z"}
+{"query": "stuff that sounds like frank ocean", "song_id": "690349", "rating": "bad", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:13:53Z"}
+{"query": "chill songs for driving at night", "song_id": "699820", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:14:07Z"}
+{"query": "melancholic", "song_id": "841150", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:14:17Z"}
+{"query": "happy songs to start the morning", "song_id": "206825", "rating": "terrible", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:14:29Z"}
+{"query": "hard trap beats", "song_id": "728729", "rating": "great", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:14:36Z"}
+{"query": "stuff that sounds like frank ocean", "song_id": "170589", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:14:47Z"}
+{"query": "hard trap beats", "song_id": "279612", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:14:57Z"}
+{"query": "music for when im in my feels", "song_id": "745015", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:15:31Z"}
+{"query": "chill songs for driving at night", "song_id": "190902", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:15:40Z"}
+{"query": "study music no lyrics", "song_id": "649333", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:15:48Z"}
+{"query": "study music no lyrics", "song_id": "615370", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:15:57Z"}
+{"query": "melancholic", "song_id": "722140", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:16:04Z"}
+{"query": "songs about heartbreak but upbeat", "song_id": "57950", "rating": "terrible", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:16:16Z"}
+{"query": "90s hip hop vibes", "song_id": "460804", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:16:26Z"}
+{"query": "songs about heartbreak but upbeat", "song_id": "312014", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:16:37Z"}
+{"query": "stuff that sounds like frank ocean", "song_id": "657377", "rating": "bad", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:16:43Z"}
+{"query": "stuff that sounds like frank ocean", "song_id": "62492", "rating": "bad", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:16:59Z"}
+{"query": "stuff that sounds like frank ocean", "song_id": "771879", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:18:07Z"}
+{"query": "melancholic", "song_id": "61741", "rating": "great", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:18:13Z"}
+{"query": "songs about heartbreak but upbeat", "song_id": "830522", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:18:24Z"}
+{"query": "music for when im in my feels", "song_id": "212796", "rating": "terrible", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:18:32Z"}
+{"query": "songs about heartbreak but upbeat", "song_id": "508329", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:18:44Z"}
+{"query": "pregame playlist", "song_id": "609754", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:18:53Z"}
+{"query": "chill songs for driving at night", "song_id": "699820", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:19:11Z"}
+{"query": "songs about heartbreak but upbeat", "song_id": "137651", "rating": "great", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:19:18Z"}
+{"query": "sad indie acoustic", "song_id": "481234", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:19:33Z"}
+{"query": "rnb slow jams", "song_id": "271839", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:19:42Z"}
+{"query": "sza type songs", "song_id": "481234", "rating": "terrible", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:19:50Z"}
+{"query": "90s hip hop vibes", "song_id": "111856", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:19:58Z"}
+{"query": "songs for a summer bbq", "song_id": "654090", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:20:05Z"}
+{"query": "songs for a summer bbq", "song_id": "635111", "rating": "great", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:20:13Z"}
+{"query": "chill songs for driving at night", "song_id": "381093", "rating": "terrible", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:20:32Z"}
+{"query": "pregame playlist", "song_id": "544989", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:20:39Z"}
+{"query": "90s hip hop vibes", "song_id": "60715", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:20:49Z"}
+{"query": "spanish party music", "song_id": "197214", "rating": "great", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:20:56Z"}
+{"query": "90s hip hop vibes", "song_id": "327963", "rating": "great", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:21:13Z"}
+{"query": "sad songs for a rainy day", "song_id": "369179", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:21:21Z"}
+{"query": "pregame playlist", "song_id": "243288", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:21:42Z"}
+{"query": "90s hip hop vibes", "song_id": "217309", "rating": "great", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:21:51Z"}
+{"query": "spanish party music", "song_id": "636926", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:22:02Z"}
+{"query": "chill songs for driving at night", "song_id": "675469", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:22:09Z"}
+{"query": "happy songs to start the morning", "song_id": "655392", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:22:20Z"}
+{"query": "sad indie acoustic", "song_id": "294806", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:22:43Z"}
+{"query": "spanish party music", "song_id": "690643", "rating": "bad", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:22:51Z"}
+{"query": "spanish party music", "song_id": "272606", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:23:10Z"}
+{"query": "melancholic", "song_id": "427029", "rating": "great", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:23:18Z"}
+{"query": "sza type songs", "song_id": "168519", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:23:24Z"}
+{"query": "songs about heartbreak but upbeat", "song_id": "543501", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:23:34Z"}
+{"query": "study music no lyrics", "song_id": "806178", "rating": "bad", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:24:11Z"}
+{"query": "pregame playlist", "song_id": "312240", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:24:18Z"}
+{"query": "songs for a summer bbq", "song_id": "653757", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:24:26Z"}
+{"query": "sza type songs", "song_id": "631714", "rating": "great", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:24:37Z"}
+{"query": "songs to lift heavy to", "song_id": "470924", "rating": "terrible", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:25:05Z"}
+{"query": "sad indie acoustic", "song_id": "692515", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:25:16Z"}
+{"query": "melancholic", "song_id": "61741", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:25:24Z"}
+{"query": "90s hip hop vibes", "song_id": "193849", "rating": "great", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:25:33Z"}
+{"query": "90s hip hop vibes", "song_id": "193849", "rating": "great", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:25:35Z"}
+{"query": "sza type songs", "song_id": "635967", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:25:42Z"}
+{"query": "sad indie acoustic", "song_id": "404219", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:25:49Z"}
+{"query": "study music no lyrics", "song_id": "649333", "rating": "bad", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:26:11Z"}
+{"query": "study music no lyrics", "song_id": "39628", "rating": "great", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:26:18Z"}
+{"query": "spanish party music", "song_id": "487665", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:26:27Z"}
+{"query": "melancholic", "song_id": "79689", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:26:32Z"}
+{"query": "sad songs for a rainy day", "song_id": "559281", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:26:38Z"}
+{"query": "sza type songs", "song_id": "17474", "rating": "bad", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:26:46Z"}
+{"query": "music for when im in my feels", "song_id": "296827", "rating": "terrible", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:26:56Z"}
+{"query": "songs about heartbreak but upbeat", "song_id": "688101", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:27:06Z"}
+{"query": "hard trap beats", "song_id": "715896", "rating": "bad", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:27:14Z"}
+{"query": "melancholic", "song_id": "722140", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:27:21Z"}
+{"query": "songs about heartbreak but upbeat", "song_id": "688101", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:27:29Z"}
+{"query": "pregame playlist", "song_id": "501019", "rating": "good", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:27:40Z"}
+{"query": "melancholic", "song_id": "495858", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:27:47Z"}
+{"query": "songs for a summer bbq", "song_id": "653175", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:27:57Z"}
+{"query": "melancholic", "song_id": "98672", "rating": "great", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:28:05Z"}
+{"query": "stuff that sounds like frank ocean", "song_id": "690348", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:28:16Z"}
+{"query": "sza type songs", "song_id": "511430", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:28:27Z"}
+{"query": "hard trap beats", "song_id": "415482", "rating": "bad", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:28:35Z"}
+{"query": "happy songs to start the morning", "song_id": "193620", "rating": "good", "desc_version": "new", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:28:50Z"}
+{"query": "sad indie acoustic", "song_id": "700005", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:28:57Z"}
+{"query": "sza type songs", "song_id": "706611", "rating": "bad", "desc_version": "old", "alpha_at_rating": 0.3, "timestamp": "2026-07-14T03:29:11Z"}

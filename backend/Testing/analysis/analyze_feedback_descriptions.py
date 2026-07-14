@@ -1,27 +1,54 @@
-# Compares binary precision before vs after description rewrite, split by timestamp.
-# Before = July 6-9 ratings at alpha=0.3. After = July 13 ratings.
+# Compares binary precision old vs new cluster descriptions using desc_version field.
+# Only counts records written by eval_two_pass.py (those with desc_version = 'old' or 'new').
+# Scores each retrieval set against all known ratings for that song+query.
 # Run as: python -m backend.Testing.analysis.analyze_feedback_descriptions
 
 import json
 from collections import defaultdict
 
 FEEDBACK_FILE = 'backend/Testing/data/feedback.jsonl'
-CUTOFF = '2026-07-13T00:00:00Z'
+RETRIEVALS_FILE = 'backend/Testing/data/two_pass_retrievals.jsonl'
 
-before = defaultdict(list)
-after = defaultdict(list)
+# full ratings store — keyed by (query, song_id), all records
+all_ratings = {}
 
 with open(FEEDBACK_FILE) as f:
     for line in f:
         r = json.loads(line)
         if r.get('alpha_at_rating') != 0.3:
             continue
-        score = 1 if r['rating'] in ('great', 'good') else 0
+        key = (r['query'], str(r['song_id']))
+        all_ratings[key] = 1 if r['rating'] in ('great', 'good') else 0
+
+# retrieval sets from two_pass_retrievals.jsonl — full sets, not just newly-rated songs
+old_songs = defaultdict(list)
+new_songs = defaultdict(list)
+
+with open(RETRIEVALS_FILE) as f:
+    for line in f:
+        r = json.loads(line)
         q = r['query']
-        if r['timestamp'] < CUTOFF:
-            before[q].append(score)
+        sid = str(r['song_id'])
+        if r['desc_version'] == 'old':
+            old_songs[q].append(sid)
         else:
-            after[q].append(score)
+            new_songs[q].append(sid)
+
+# score each retrieval set against full ratings store
+before = defaultdict(list)
+after = defaultdict(list)
+
+for q, sids in old_songs.items():
+    for sid in sids:
+        key = (q, sid)
+        if key in all_ratings:
+            before[q].append(all_ratings[key])
+
+for q, sids in new_songs.items():
+    for sid in sids:
+        key = (q, sid)
+        if key in all_ratings:
+            after[q].append(all_ratings[key])
 
 all_queries = sorted(set(before) | set(after))
 

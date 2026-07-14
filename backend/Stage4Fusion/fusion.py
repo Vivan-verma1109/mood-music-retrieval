@@ -131,7 +131,7 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.3, language = No
     results = results.drop_duplicates(subset=['_name_lower', '_artist_lower'])
     results = results.drop(columns=['_name_lower', '_artist_lower'])
     results['song_id'] = results.index.astype(str)
-
+    results = results.head(top_k)
     if check_spotify:
         print("Verifying Spotify availability...")
         results = filter_available(results, top_k=top_k)

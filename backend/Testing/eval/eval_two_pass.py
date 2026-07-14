@@ -39,6 +39,7 @@ QUERIES = [
 
 ALPHA = 0.3
 FEEDBACK_FILE = os.path.join(os.path.dirname(__file__), '..', 'data', 'feedback.jsonl')
+RETRIEVALS_FILE = os.path.join(os.path.dirname(__file__), '..', 'data', 'two_pass_retrievals.jsonl')
 old_desc_embs = model.encode(
     [cluster_descriptions_old[i] for i in sorted(cluster_descriptions_old.keys())], normalize_embeddings = True).astype('float32')
 
@@ -59,6 +60,14 @@ def run_with_new():
 
 old_results = run_with_old()
 new_results = run_with_new()
+
+# log full retrieval sets unconditionally so analysis can score all retrieved songs
+with open(RETRIEVALS_FILE, 'w') as f:
+    for mood_query in QUERIES:
+        for sid in old_results[mood_query]:
+            f.write(json.dumps({"query": mood_query, "song_id": sid, "desc_version": "old"}) + '\n')
+        for sid in new_results[mood_query]:
+            f.write(json.dumps({"query": mood_query, "song_id": sid, "desc_version": "new"}) + '\n')
 
 seen = set()
 if os.path.exists(FEEDBACK_FILE):
@@ -82,6 +91,7 @@ rating_map = {'f': 'great', 'g': 'good', 'b': 'bad', 't': 'terrible'}
 
 
 for mood_query, sid, desc_version in to_rate:
+    print(f"\n  [{mood_query}]")
     row = df.loc[int(sid)]
     print(f"  {row['name']} — {row['artists']}")
     rating = None
