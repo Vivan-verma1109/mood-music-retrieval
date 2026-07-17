@@ -67,9 +67,6 @@ def fetch_year(spotify_id):
             return None
         date = resp.json()['album']['release_date']
         year = int(date[:4]) if len(date) >= 4 else None
-        if year is not None and (year < 1900 or year > 2025):
-            print(f"  [years] bad year {year} — {spotify_id}, discarding")
-            year = None
         print(f"  [years] {year} — {spotify_id}")
         time.sleep(0.2)  # 200ms between requests
         return year

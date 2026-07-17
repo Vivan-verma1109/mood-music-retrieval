@@ -171,5 +171,5 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.4, language = No
 if __name__ == '__main__':
     query_text = "sad songs for a rainy day"
     print(f"\nQuery: {query_text}\n")
-    results, _ = query(query_text, top_k = 20, pop_candidates = 50, check_spotify = False)
+    results, _ = query(query_text, top_k = 20, pop_candidates = re50, check_spotify = False)
     print(results.to_string(index=False))
