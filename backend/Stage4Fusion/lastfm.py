@@ -91,7 +91,7 @@ def rerank_by_listeners(pool_idx, pool_scores, df, top_k, popularity_weight = 0.
     listeners = listeners[keep]
     tags = [tags[i] for i in np.where(keep)[0]]
 
-    LISTENER_CAP = 10_000_000
+    LISTENER_CAP = 30_000_000
     listeners_norm = np.minimum(listeners, LISTENER_CAP) / LISTENER_CAP
 
     final_score = pool_scores * (1 + popularity_weight * listeners_norm)

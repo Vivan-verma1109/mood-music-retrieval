@@ -4,8 +4,7 @@ import numpy as np
 from backend.config import GENRE_ALIASES, GENRE_CLUSTERS
 from backend.Stage4Fusion.loader import df, embeddings, X_scaled, model, cluster_ids, cluster_centroids, audio_centroids, cluster_desc_embeddings
 from backend.Stage4Fusion.lastfm import rerank_by_listeners
-from backend.Stage4Fusion.spotify import filter_available
-from backend.Stage0Data.years import years_cache, fetch_year, save_years_cache
+from backend.Stage0Data.years import years_cache, fetch_track_info, save_years_cache
 
 """
 Scans query text for genre keywords and returns the corresponding Last.fm tag aliases from GENRE_ALIASES.
@@ -56,7 +55,7 @@ Args:
 Returns:
     DataFrame: Ranked songs with columns name, artists, mood, valence, energy, listeners, score.
 """
-def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.4, language = None, genre = None, artist = None, check_spotify = True, desc_embeddings = None):
+def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.7, language = None, genre = None, artist = None, desc_embeddings = None):
 
     # embed query
     query_emb = model.encode([mood_text], normalize_embeddings=True).astype('float32')
@@ -123,13 +122,13 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.4, language = No
     for idx in pool_idx:
         sid = str(idx)
         if sid not in years_cache:
-            years_cache[sid] = fetch_year(df.loc[idx, 'id'])
+            years_cache[sid] = fetch_track_info(df.loc[idx, 'id'])
             save_years_cache()
 
     print(f"Fetching listener counts for top {pop_candidates} candidates...")
-    top_global, listeners, final_scores, song_meta = rerank_by_listeners(pool_idx, pool_scores, df, top_k=20, genre_song=genre_aliases, genre_penalty=genre_penalty)
+    top_global, listeners, final_scores, song_meta = rerank_by_listeners(pool_idx, pool_scores, df, top_k=30, genre_song=genre_aliases, genre_penalty=genre_penalty)
 
-    results = df.loc[top_global, ['name', 'artists', 'mood', 'valence', 'energy']].copy()
+    results = df.loc[top_global, ['name', 'artists', 'mood', 'valence', 'energy', 'id']].copy()
     results['listeners'] = listeners.astype(int)
     results['score'] = final_scores
 
@@ -138,11 +137,8 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.4, language = No
     results['_artist_lower'] = results['artists'].str.lower().str.strip()
     results = results.drop_duplicates(subset=['_name_lower', '_artist_lower'])
     results = results.drop(columns=['_name_lower', '_artist_lower'])
+    results = results.rename(columns={'id': 'spotify_id'})
     results['song_id'] = results.index.astype(str)
-    results = results.head(top_k)
-    if check_spotify:
-        print("Verifying Spotify availability...")
-        results = filter_available(results, top_k=top_k)
 
     per_song = {}
     for rank_pos, (df_idx, meta) in enumerate(zip(top_global, song_meta)):
@@ -171,5 +167,5 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.4, language = No
 if __name__ == '__main__':
     query_text = "sad songs for a rainy day"
     print(f"\nQuery: {query_text}\n")
-    results, _ = query(query_text, top_k = 20, pop_candidates = re50, check_spotify = False)
+    results, _ = query(query_text, top_k = 10, pop_candidates = 50)
     print(results.to_string(index=False))

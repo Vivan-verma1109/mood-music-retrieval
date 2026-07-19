@@ -1,1 +1,153 @@
 /* App-level styles */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #121212;
+    color: white;
+    font-family: sans-serif;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+input, select, button {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: none;
+    font-size: 14px;
+}
+
+input, select {
+    background: #282828;
+    color: white;
+}
+
+button {
+    background: #1db954;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+/* fixed background layer — sits behind everything */
+.bubbles {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.bubble {
+    position: absolute;
+    bottom: -120px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    animation: rise linear infinite;
+}
+
+@keyframes rise {
+    0%   { transform: translateY(0);      opacity: 0.7; }
+    80%  { opacity: 0.4; }
+    100% { transform: translateY(-105vh); opacity: 0; }
+}
+
+/* centers the whole page and caps width so it doesn't stretch on wide screens */
+.container {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 16px;
+    position: relative;
+    z-index: 1;
+}
+
+/* lays out the mood input, dropdowns, and button in a single horizontal row */
+form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 32px;
+    justify-content: center;
+}
+
+/* 5-column grid for the song cards */
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+    margin-top: 24px;
+    align-items: start;
+}
+
+/* dark tile background for each song card */
+.card {
+    background: #181818;
+    border-radius: 8px;
+    padding: 8px;
+    color: white;
+}
+
+/* row of emoji feedback buttons at the top of each card */
+.card-feedback {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+/* wraps the album art + text and makes the whole block a clickable Spotify link */
+.card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    text-decoration: none;
+    color: inherit;
+}
+
+/* album art square — placeholder shows a grey box while the image loads */
+.card-img, .card-img-placeholder {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 4px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #333;
+}
+
+/* prevents long titles from blowing out the card width */
+.card-text {
+    min-width: 0;
+}
+
+/* song title — bold, truncates with ellipsis if too long */
+.card-name {
+    font-weight: bold;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* artist name — smaller and grey, also truncates */
+.card-artist {
+    font-size: 12px;
+    color: #aaa;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

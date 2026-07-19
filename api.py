@@ -1,15 +1,17 @@
-# FastAPI server — exposes the /query and /feedback endpoints that the React frontend calls.
+# FastAPI server — exposes the /query, /page, and /feedback endpoints that the React frontend calls.
 # Receives mood text + filters, runs the full retrieval pipeline, returns ranked songs.
 import uuid
 import time
 import math
 import json
 import os
+import numpy as np
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 from backend.Stage4Fusion.fusion import query
+from backend.Stage0Data.years import years_cache
 
 app = FastAPI()
 
@@ -25,7 +27,7 @@ app.add_middleware(
 _request_cache = {}
 _CACHE_TTL = 60 * 30  # 30 minutes
 
-_FEEDBACK_FILE = os.path.join(os.path.dirname(__file__), 'backend', 'feedback.jsonl')
+_FEEDBACK_FILE = os.path.join(os.path.dirname(__file__), 'backend', 'Testing', 'data', 'feedback.jsonl')
 
 class QueryRequest(BaseModel):
     mood: str
@@ -49,12 +51,14 @@ def run_query(req: QueryRequest):
         artist=req.artist,
     )
     request_id = str(uuid.uuid4())
+    results['image'] = results['song_id'].map(lambda sid: (years_cache.get(sid) or {}).get('image'))
+    # convert NaN to None so json serialization doesn't blow up
+    records = [{k: (None if isinstance(v, float) and np.isnan(v) else v) for k, v in row.items()} for row in results.to_dict(orient="records")]
     _request_cache[request_id] = {
         "songs": per_song,
         "expires_at": time.time() + _CACHE_TTL,
     }
-    records = results.to_dict(orient="records")
-    return {"request_id": request_id, "results": records}
+    return {"request_id": request_id, "results": records[:req.top_k]}
 
 @app.post("/feedback")
 def submit_feedback(req: FeedbackRequest):

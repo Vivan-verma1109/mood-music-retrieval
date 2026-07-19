@@ -46,7 +46,7 @@ def save_years_cache():
 
 
                                                                                                                                                                                                                                                                                                                                               
-def fetch_year(spotify_id):
+def fetch_track_info(spotify_id):
     try:
         token = _get_token()
         resp = requests.get(
@@ -56,7 +56,7 @@ def fetch_year(spotify_id):
         )
         if resp.status_code == 403:
             print(f"  [years] 403 — Spotify endpoint restricted")
-            return None
+            return {"year": None, "image": None}
         if resp.status_code == 429:
             wait = int(resp.headers.get('Retry-After', 5))
             print(f"  [years] rate limited {wait}s — saving checkpoint and stopping")
@@ -64,12 +64,15 @@ def fetch_year(spotify_id):
             raise SystemExit(f"Rate limited for {wait}s. Resume later.")
         if resp.status_code != 200:
             print(f"  [years] {resp.status_code} — {spotify_id}")
-            return None
-        date = resp.json()['album']['release_date']
+            return {"year": None, "image": None}
+        track = resp.json()
+        date = track['album']['release_date']
         year = int(date[:4]) if len(date) >= 4 else None
+        images = track['album'].get('images', [])
+        image = images[0]['url'] if images else None
         print(f"  [years] {year} — {spotify_id}")
-        time.sleep(0.2)  # 200ms between requests
-        return year
+        time.sleep(0.2)
+        return {"year": year, "image": image}
     except Exception as e:
         print(f"  [years] error — {spotify_id}: {e}")
-        return None
+        return {"year": None, "image": None}

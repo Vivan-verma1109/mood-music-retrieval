@@ -1,11 +1,46 @@
 // main app component — all UI logic lives here
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
+import Bubbles from './Bubbles'
+
+function SongCard({ r, rated, onFeedback }) {
+    const [img, setImg] = useState(r.image || null)
+
+    useEffect(() => {
+        if (!img) {
+            fetch(`https://open.spotify.com/oembed?url=https://open.spotify.com/track/${r.spotify_id}`)
+                .then(res => res.json())
+                .then(data => setImg(data.thumbnail_url))
+                .catch(() => {})
+        }
+    }, [])
+
+    return (
+        <div className="card">
+            <div className="card-feedback">
+                <button onClick={() => onFeedback(r.song_id, 'great')} disabled={rated.has(r.song_id)}>🔥</button>
+                <button onClick={() => onFeedback(r.song_id, 'good')} disabled={rated.has(r.song_id)}>👍</button>
+                <button onClick={() => onFeedback(r.song_id, 'bad')} disabled={rated.has(r.song_id)}>👎</button>
+                <button onClick={() => onFeedback(r.song_id, 'terrible')} disabled={rated.has(r.song_id)}>🗑️</button>
+            </div>
+            <a href={`https://open.spotify.com/track/${r.spotify_id}`} target="_blank" rel="noreferrer" className="card-body">
+                {img
+                    ? <img src={img} alt={r.name} className="card-img" />
+                    : <div className="card-img-placeholder" />
+                }
+                <div className="card-text">
+                    <div className="card-name">{r.name}</div>
+                    <div className="card-artist">{r.artists}</div>
+                </div>
+            </a>
+        </div>
+    )
+}
 
 function App() {
     const [mood, setMood] = useState("I'm feeling ")
     const [genre, setGenre] = useState('')
-    const [language, setLanguage] = useState('')
+    const [language, setLanguage] = useState('en')
     const [artist, setArtist] = useState('')
     
     const [results, setResults] = useState([])
@@ -23,7 +58,7 @@ function App() {
             const res = await fetch('http://localhost:8000/query', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mood, top_k: 20, genre, language, artist }),
+                body: JSON.stringify({ mood, top_k: 10, genre, language, artist }),
                 signal: controller.signal,
             })
             const data = await res.json()
@@ -47,6 +82,8 @@ function App() {
     }
 
     return (
+        <>
+        <Bubbles />
         <div className="container">
             <h1>Mood Moosic</h1>
             <form onSubmit={handleSubmit}>
@@ -92,31 +129,14 @@ function App() {
             </form>
 
             {results.length > 0 && (
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Song</th>
-                            <th>Artist</th>
-                            <th>Feedback</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {results.map((r, i) => (
-                            <tr key={i}>
-                                <td>{r.name}</td>
-                                <td>{r.artists}</td>
-                                <td>
-                                    <button onClick={() => submitFeedback(r.song_id, 'great')} disabled={rated.has(r.song_id)}>🔥</button>
-                                    <button onClick={() => submitFeedback(r.song_id, 'good')} disabled={rated.has(r.song_id)}>👍</button>
-                                    <button onClick={() => submitFeedback(r.song_id, 'bad')} disabled={rated.has(r.song_id)}>👎</button>
-                                    <button onClick={() => submitFeedback(r.song_id, 'terrible')} disabled={rated.has(r.song_id)}>🗑️</button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <div className="results-grid">
+                    {results.map((r, i) => (
+                        <SongCard key={i} r={r} rated={rated} onFeedback={submitFeedback} />
+                    ))}
+                </div>
             )}
         </div>
+        </>
     )
 }
 
