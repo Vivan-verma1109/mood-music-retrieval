@@ -55,7 +55,10 @@ Data-derived cluster embeddings (mean of member lyric embeddings) — the fallba
 OAuth/playlist export — product polish, zero interview value, lowest priority
 
 
-
+And the shelved ideas:
+- Anchor song (pin highest-listener song to slot 0)
+- Year filter (once years_cache bulks up)
+- Artist filter bypasses cluster routing entirely
 
 Exclude user's liked songs
 - Spotify OAuth (Authorization Code flow) to get user's saved tracks

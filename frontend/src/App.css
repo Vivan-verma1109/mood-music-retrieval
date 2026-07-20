@@ -89,7 +89,7 @@ form {
 /* 5-column grid for the song cards */
 .results-grid {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 12px;
     margin-top: 24px;
 }
@@ -107,6 +107,11 @@ form {
     display: flex;
     gap: 4px;
     margin-bottom: 6px;
+}
+
+.card-feedback button {
+    font-size: 12px;
+    padding: 2px;
 }
 
 /* wraps the album art + text and makes the whole block a clickable Spotify link */
