@@ -21,6 +21,7 @@ years_cache = {}
 if os.path.exists(_CACHE_FILE):
     with open(_CACHE_FILE) as f:
         years_cache = json.load(f)
+# gets a Spotify client credentials token, refreshes it if expired
 def _get_token():
     global _token, _token_expiry
     if _token and time.time() < _token_expiry - 60:
@@ -46,6 +47,7 @@ def save_years_cache():
 
 
                                                                                                                                                                                                                                                                                                                                               
+# hits Spotify GET /tracks/{id} to get release year and album art, returns {year, image}
 def fetch_track_info(spotify_id):
     try:
         token = _get_token()

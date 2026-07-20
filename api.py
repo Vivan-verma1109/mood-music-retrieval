@@ -41,6 +41,11 @@ class FeedbackRequest(BaseModel):
     song_id: str
     rating: str  # "good" or "bad"
 
+class PageRequest(BaseModel):
+    request_id: str
+    offset: int
+
+# runs the full pipeline and returns the first 10 songs, caches the full pool for paging
 @app.post("/query")
 def run_query(req: QueryRequest):
     results, per_song = query(
@@ -51,15 +56,20 @@ def run_query(req: QueryRequest):
         artist=req.artist,
     )
     request_id = str(uuid.uuid4())
-    results['image'] = results['song_id'].map(lambda sid: (years_cache.get(sid) or {}).get('image'))
     # convert NaN to None so json serialization doesn't blow up
     records = [{k: (None if isinstance(v, float) and np.isnan(v) else v) for k, v in row.items()} for row in results.to_dict(orient="records")]
     _request_cache[request_id] = {
         "songs": per_song,
+        "pool": records, 
         "expires_at": time.time() + _CACHE_TTL,
     }
-    return {"request_id": request_id, "results": records[:req.top_k]}
+    # 10 first images
+    first_page = records[:10]
+    for r in first_page:
+        r['image'] = (years_cache.get(r['song_id']) or {}).get('image')
+    return {"request_id": request_id, "results": first_page}
 
+# saves a thumbs up/down rating for a song to feedback.jsonl
 @app.post("/feedback")
 def submit_feedback(req: FeedbackRequest):
     entry = _request_cache.get(req.request_id)
@@ -83,3 +93,15 @@ def submit_feedback(req: FeedbackRequest):
         f.write(json.dumps(record) + '\n')
 
     return {"status": "ok"}
+
+# slices the next 10 songs from the cached pool without re-running the pipeline
+@app.post("/page")
+def next_page(req: PageRequest):
+    entry = _request_cache.get(req.request_id)
+    if not entry or time.time() > entry["expires_at"]:
+        _request_cache.pop(req.request_id, None)
+        raise HTTPException(status_code=410, detail="Request expired")
+    page = entry["pool"][req.offset: req.offset + 10]
+    for r in page:
+        r['image'] = (years_cache.get(r['song_id']) or {}).get('image')
+    return {"results": page}

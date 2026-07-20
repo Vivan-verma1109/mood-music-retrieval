@@ -92,7 +92,6 @@ form {
     grid-template-columns: repeat(5, 1fr);
     gap: 12px;
     margin-top: 24px;
-    align-items: start;
 }
 
 /* dark tile background for each song card */
@@ -119,14 +118,26 @@ form {
     color: inherit;
 }
 
-/* album art square — placeholder shows a grey box while the image loads */
-.card-img, .card-img-placeholder {
+/* square container that enforces 1:1 ratio regardless of image dimensions */
+.card-img-wrapper {
     width: 100%;
     aspect-ratio: 1;
+    overflow: hidden;
     border-radius: 4px;
-    object-fit: cover;
-    flex-shrink: 0;
     background: #333;
+}
+
+/* album art fills the wrapper */
+.card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* grey box shown while image loads */
+.card-img-placeholder {
+    width: 100%;
+    height: 100%;
 }
 
 /* prevents long titles from blowing out the card width */
@@ -150,4 +161,25 @@ form {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* refresh button — same green as Find Songs, fades when disabled */
+.refresh-btn {
+    background: #1db954;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.refresh-btn:disabled {
+    background: #1db95466;
+    cursor: default;
+}
+
+/* message shown below the grid when the user has exhausted all 4 refreshes */
+.sorry-msg {
+    text-align: center;
+    color: #aaa;
+    margin-top: 16px;
+    font-size: 14px;
 }

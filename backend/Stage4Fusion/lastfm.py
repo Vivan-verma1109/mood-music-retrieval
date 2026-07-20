@@ -11,6 +11,7 @@ LASTFM_KEY = os.environ['LASTFM_API_KEY']
 
 _CACHE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'artist_cache.json')
 
+# loads the artist cache from disk, returns empty dict if file doesn't exist
 def _load_cache():
     try:
         with open(_CACHE_FILE) as f:
@@ -18,6 +19,7 @@ def _load_cache():
     except:
         return {}
 
+# writes the artist cache back to disk
 def _save_cache(cache):
     with open(_CACHE_FILE, 'w') as f:
         json.dump(cache, f)
@@ -25,17 +27,7 @@ def _save_cache(cache):
 _artist_cache = _load_cache()
 
 
-"""
-Fetches listener count and artist tags from Last.fm using artist.getInfo.
-Results are cached to backend/artist_cache.json so repeat artists skip the API call.
-
-Args:
-    artist (str): Artist name.
-    track (str): Track name (unused in API call, kept for signature consistency).
-Returns:
-    tuple: (listeners: int, tags: list[str]) — tags are lowercase strings.
-           Returns (0, []) on any failure.
-"""
+# fetches listener count + genre tags from Last.fm for an artist, caches result so we don't re-hit the API
 def get_track_info(artist, track):
     if artist in _artist_cache:
         return _artist_cache[artist]
@@ -55,22 +47,7 @@ def get_track_info(artist, track):
     except:
         return 0, []
 
-"""
-Re-ranks candidate songs by combining lyric/audio scores with Last.fm listener counts.
-Optionally boosts songs whose Last.fm tags match the requested genre (3x multiplier).
-Songs with fewer than 100k listeners are filtered out.
-
-Args:
-    pool_idx (np.ndarray): DataFrame indices of candidate songs.
-    pool_scores (np.ndarray): Fused lyric+audio scores for each candidate.
-    df (DataFrame): Full songs DataFrame.
-    top_k (int): Number of top songs to return.
-    popularity_weight (float): How much listener count influences final score. Default 0.3.
-    genre_song (list[str] | None): Last.fm tag aliases to boost 5x (from GENRE_ALIASES). None = no boost.
-    genre_penalty (list[str] | None): Last.fm tag aliases to penalize 0.3x (all other genre aliases). None = no penalty.
-Returns:
-    tuple: (top_indices: np.ndarray, listeners: np.ndarray, final_scores: np.ndarray)
-"""
+# re-ranks candidates by blending fused score with Last.fm listener count, applies genre boost/penalty
 def rerank_by_listeners(pool_idx, pool_scores, df, top_k, popularity_weight = 0.3, genre_song = None, genre_penalty = None):
 
     listeners = []
@@ -85,7 +62,7 @@ def rerank_by_listeners(pool_idx, pool_scores, df, top_k, popularity_weight = 0.
 
     median_l = np.median(listeners[listeners > 0]) if (listeners > 0).any() else 1
     listeners = np.where(listeners == 0, median_l, listeners)
-    keep = listeners >= 10
+    keep = listeners >= 50000
     pool_idx = pool_idx[keep]
     pool_scores = pool_scores[keep]
     listeners = listeners[keep]
@@ -99,7 +76,7 @@ def rerank_by_listeners(pool_idx, pool_scores, df, top_k, popularity_weight = 0.
     if genre_song or genre_penalty:
         for idx, tag in enumerate(tags):
             if genre_song and any(alias in tag for alias in genre_song):
-                final_score[idx] *= 5
+                final_score[idx] *= 2
                 genre_boost_fired[idx] = True
                 print(f"  Genre boost: {df.loc[pool_idx[idx], 'name']}")
             elif genre_penalty and any(alias in tag for alias in genre_penalty):

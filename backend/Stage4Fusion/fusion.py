@@ -55,7 +55,7 @@ Args:
 Returns:
     DataFrame: Ranked songs with columns name, artists, mood, valence, energy, listeners, score.
 """
-def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.7, language = None, genre = None, artist = None, desc_embeddings = None):
+def query(mood_text, top_k = 10, pop_candidates = 100, alpha = 0.7, language = None, genre = None, artist = None, desc_embeddings = None):
 
     # embed query
     query_emb = model.encode([mood_text], normalize_embeddings=True).astype('float32')
@@ -126,7 +126,7 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.7, language = No
             save_years_cache()
 
     print(f"Fetching listener counts for top {pop_candidates} candidates...")
-    top_global, listeners, final_scores, song_meta = rerank_by_listeners(pool_idx, pool_scores, df, top_k=30, genre_song=genre_aliases, genre_penalty=genre_penalty)
+    top_global, listeners, final_scores, song_meta = rerank_by_listeners(pool_idx, pool_scores, df, top_k=50, genre_song=genre_aliases, genre_penalty=genre_penalty)
 
     results = df.loc[top_global, ['name', 'artists', 'mood', 'valence', 'energy', 'id']].copy()
     results['listeners'] = listeners.astype(int)
@@ -167,5 +167,5 @@ def query(mood_text, top_k = 10, pop_candidates = 50, alpha = 0.7, language = No
 if __name__ == '__main__':
     query_text = "sad songs for a rainy day"
     print(f"\nQuery: {query_text}\n")
-    results, _ = query(query_text, top_k = 10, pop_candidates = 50)
+    results, _ = query(query_text, top_k = 50, pop_candidates = 50)
     print(results.to_string(index=False))

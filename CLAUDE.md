@@ -29,9 +29,7 @@ User mood query (text) + optional genre / language / artist filters
         ↓
   top 50 → Last.fm listener count re-ranking (+ genre tag boost)
         ↓
-  Spotify availability check
-        ↓
-  Ranked playlist (top_k results)
+  Ranked pool of 50 cached under request_id (paged 10 at a time via /page)
 ```
 
 ## Pipeline Stages
@@ -60,13 +58,14 @@ User mood query (text) + optional genre / language / artist filters
   2. Semantic SBERT cosine sim: query embedding vs cluster description embeddings (13×768), top 3 clusters selected
 - Language filter: ISO 639-1 code matched against `language` column (langdetect)
 - Artist filter: substring match against `artists` column (case-insensitive)
-- Candidate scoring: α * audio_sim + (1-α) * lyric_sim (α=0.3)
+- Candidate scoring: α * audio_sim + (1-α) * lyric_sim (α=0.6 — bumped from 0.3 to reduce literal lyric matching)
 - Re-ranking: top 50 candidates re-ranked with Last.fm listener count
-  - `final_score = lyric_score * (1 + 0.3 * listeners_norm)`
-  - Songs with < 100k listeners filtered out
-  - Genre tag boost: 3x multiplier if Last.fm artist tags match genre aliases
+  - `final_score = fused_score * (1 + 0.3 * listeners_norm)`
+  - Songs with < 10 listeners filtered out
+  - Genre tag boost: 5x multiplier if Last.fm artist tags match genre aliases
   - Artist listener counts cached to `backend/artist_cache.json` (persists across restarts)
-- Spotify availability check: verifies top candidates exist on Spotify via search API
+- Full ranked pool of 50 cached under request_id for 30 min; paged 10 at a time via /page endpoint
+- Spotify availability check removed — spotify_id from dataset used directly for links
 
 ---
 
@@ -88,7 +87,7 @@ User mood query (text) + optional genre / language / artist filters
 - instrumentalness — predicts absence of vocals; high = instrumental track (0 to 1)
 
 ## API Notes
-- **Spotify Web API (Feb 2026)**: batch tracks endpoint (GET /tracks) removed, popularity field removed. Used only for availability check via search.
+- **Spotify Web API (Feb 2026)**: batch tracks endpoint (GET /tracks) 403s for dev apps. Single track endpoint (GET /tracks/{id}) works. Used lazily at query time to fetch release year + album art, cached to `backend/Testing/data/years_cache.json`.
 - **Last.fm API**: free, no OAuth for read calls. Used for listener counts and genre tags via artist.getInfo. Key in .env as LASTFM_API_KEY.
 
 ---
@@ -100,8 +99,8 @@ User mood query (text) + optional genre / language / artist filters
 4. [x] Projection layer trained (Ridge 768→5) — dropped in favor of lyric centroid routing
 5. [x] End-to-end query → cluster filter → lyric rerank working
 6. [x] Codebase restructured into backend/ folder
-7. [x] FastAPI api.py at root exposing /query endpoint
-8. [x] React frontend in frontend/ with inputs for mood, artist, genre, language, top_k
+7. [x] FastAPI api.py at root exposing /query, /page, /feedback endpoints
+8. [x] React frontend in frontend/ with inputs for mood, artist, genre, language; card grid UI with album art
 9. [x] Retrained KMeans with 7 features (added speechiness + instrumentalness), 13 clusters
 10. [x] Semantic cluster routing (SBERT embeddings of cluster descriptions, top 3 clusters)
 11. [x] Blind eval — 170 hand-labeled ratings across 18 queries at 4 alpha values; alpha=0.3 confirmed, closed
@@ -113,8 +112,12 @@ User mood query (text) + optional genre / language / artist filters
 17. [ ] Spotify OAuth + PostgreSQL (SQLAlchemy) for token storage
 18. [ ] Spotify playlist export (POST /me/playlists)
 19. [ ] Filter out user's liked songs from results
-20. [ ] Release year / era filtering
-21. [ ] Artist filter bypasses cluster routing entirely
+20. [x] Lazy year + album art fetch via Spotify GET /tracks/{id}, cached to years_cache.json
+21. [x] Dark UI overhaul — Spotify-ish card grid, animated bubble background, centered layout
+22. [x] /page endpoint for paging through cached pool without re-running pipeline
+23. [ ] Release year / era filtering (needs years_cache to bulk up first)
+24. [ ] Artist filter bypasses cluster routing entirely
+25. [ ] Bulk year/image enrichment script for hot catalog songs
 
 ---
 
@@ -137,6 +140,10 @@ User mood query (text) + optional genre / language / artist filters
 - **Alpha=0.3 confirmed, closed**: blind eval (170 ratings, 18 queries, 4 alpha values 0/0.15/0.3/0.5) showed precision 0.41–0.45 across the full range; top-10 lists were mostly the same songs reordered. Not worth tuning further.
 - **audio_sim flat within candidate pools**: audio_sim ~0.96 across all rating levels within a cluster's candidate pool — it doesn't discriminate between songs once they're in the same cluster. Audio features separate clusters from each other; after that, lyric similarity does the ranking work. This is why alpha barely matters.
 - **Cluster descriptions as routing targets**: rewritten July 2026 after eval showed context/activity queries (lift heavy, bbq, study) hitting 0–25% precision vs 75–90% for mood vocabulary queries. Root cause: original descriptions had no activity/context vocab so SBERT had nothing to match "songs to lift to" against. New structure: genre/sound + mood + activity/context per description, all 13 generated contrastively in one shot. Fixed twin pairs: 6 (modern melancholy, rainy days) vs 11 (timeless hushed ballads), 1 (laid-back groove, cruising) vs 5 (euphoric party, pregame). Cluster 0 kept deliberately flat — no context vocab — so it only wins when nothing else matches.
+- **Alpha bumped to 0.6**: eval confirmed 0.3 was fine numerically but in practice lyric sim was matching too literally (e.g. "alone" → songs with "alone" in lyrics regardless of feel). More audio weight makes results feel more like the mood rather than reading like the query.
+- **Spotify availability check removed**: was calling Spotify search API per song to verify availability. Redundant now that `spotify_id` from the dataset is used directly for links — the ID is already valid.
+- **Paging via /page endpoint**: full ranked pool of 50 cached under request_id for 30 min. Frontend can page through in slices of 10 without re-running SBERT routing or fusion. Images attached per page, not upfront.
+- **Lazy year + image fetch**: Spotify GET /tracks/{id} called at query time for uncached songs only. Results stored in years_cache.json with {year, image} per song_id. 200ms sleep between calls, Retry-After on 429 saves cache and exits.
 
 ## Stack
 - **Backend**: FastAPI (Python), PostgreSQL + SQLAlchemy (planned, for OAuth token storage)

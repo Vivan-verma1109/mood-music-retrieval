@@ -7,13 +7,14 @@ function SongCard({ r, rated, onFeedback }) {
     const [img, setImg] = useState(r.image || null)
 
     useEffect(() => {
-        if (!img) {
+        setImg(r.image || null)
+        if (!r.image) {
             fetch(`https://open.spotify.com/oembed?url=https://open.spotify.com/track/${r.spotify_id}`)
                 .then(res => res.json())
                 .then(data => setImg(data.thumbnail_url))
                 .catch(() => {})
         }
-    }, [])
+    }, [r.spotify_id])
 
     return (
         <div className="card">
@@ -24,10 +25,12 @@ function SongCard({ r, rated, onFeedback }) {
                 <button onClick={() => onFeedback(r.song_id, 'terrible')} disabled={rated.has(r.song_id)}>🗑️</button>
             </div>
             <a href={`https://open.spotify.com/track/${r.spotify_id}`} target="_blank" rel="noreferrer" className="card-body">
-                {img
-                    ? <img src={img} alt={r.name} className="card-img" />
-                    : <div className="card-img-placeholder" />
-                }
+                <div className="card-img-wrapper">
+                    {img
+                        ? <img src={img} alt={r.name} className="card-img" />
+                        : <div className="card-img-placeholder" />
+                    }
+                </div>
                 <div className="card-text">
                     <div className="card-name">{r.name}</div>
                     <div className="card-artist">{r.artists}</div>
@@ -48,8 +51,14 @@ function App() {
     const [requestId, setRequestId] = useState(null)
     const [rated, setRated] = useState(new Set())
 
+    const [offset, setOffset] = useState(0)
+    const [refreshCount, setRefreshCount] = useState(0)
+    const [cd, setCd] = useState(false)
+
+    // called when the form is submitted — runs the full query and resets all pagination state
     async function handleSubmit(e) {
-        e.preventDefault()
+        if (e)
+            e.preventDefault()
         setLoading(true)
         // abort the request if it takes longer than 2 minutes
         const controller = new AbortController()
@@ -58,13 +67,16 @@ function App() {
             const res = await fetch('http://localhost:8000/query', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ mood, top_k: 10, genre, language, artist }),
+                body: JSON.stringify({ mood, top_k: 50, genre, language, artist }),
                 signal: controller.signal,
             })
             const data = await res.json()
             setRequestId(data.request_id)
             setResults(data.results)
             setRated(new Set())
+            setOffset(0)
+            setRefreshCount(0)
+            setCd(false)
         } finally {
             // always re-enable the button, whether request succeeded, failed, or timed out
             clearTimeout(timeout)
@@ -72,13 +84,35 @@ function App() {
         }
     }
 
+    // sends a rating for a song to the backend and marks it as rated so buttons disable
     async function submitFeedback(songId, rating) {
         setRated(prev => new Set(prev).add(songId))
-        fetch('http://localhost:8000/feedback', {
+        const res = await fetch('http://localhost:8000/feedback', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ request_id: requestId, song_id: songId, rating }),
         })
+    }
+    // fetches the next 10 songs from the cached pool and replaces the current grid
+    async function nextTen(){
+        const newOffset = offset + 10
+        setCd(true)
+        const res = await fetch('http://localhost:8000/page', {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body:  JSON.stringify({ request_id: requestId, offset: newOffset}),
+        })
+        if (res.status === 410){
+            handleSubmit()
+            setCd(false)
+            return
+        }
+        const data = await res.json()
+        setResults(data.results)
+        setOffset(newOffset)
+        const newCount = refreshCount + 1
+        setRefreshCount(newCount)
+        setTimeout(() => setCd(false), 3000)
     }
 
     return (
@@ -126,15 +160,21 @@ function App() {
                 <button type="submit" disabled={loading}>
                     {loading ? 'Finding...' : 'Find Songs'}
                 </button>
+                <button type="button" className="refresh-btn" onClick={nextTen} disabled={cd || refreshCount >= 4 || results.length === 0}>
+                    Refresh
+                </button>
             </form>
 
-            {results.length > 0 && (
-                <div className="results-grid">
-                    {results.map((r, i) => (
-                        <SongCard key={i} r={r} rated={rated} onFeedback={submitFeedback} />
-                    ))}
-                </div>
-            )}
+              {results.length > 0 && (
+                  <div className="results-grid">
+                      {results.map((r, i) => (
+                          <SongCard key={r.song_id} r={r} rated={rated} onFeedback={submitFeedback} />
+                      ))}
+                  </div>
+              )}
+              {refreshCount >= 4 && (
+                  <p className="sorry-msg">Sorry thats all this query has, if you do not like the results try another!</p>
+              )}
         </div>
         </>
     )
