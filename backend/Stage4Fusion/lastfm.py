@@ -4,8 +4,14 @@ import json
 import numpy as np
 import requests
 import os
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from dotenv import load_dotenv
 from backend.Stage0Data.years import years_cache
+
+
+
+
 load_dotenv()
 LASTFM_KEY = os.environ['LASTFM_API_KEY']
 
@@ -25,12 +31,16 @@ def _save_cache(cache):
         json.dump(cache, f)
 
 _artist_cache = _load_cache()
+_cache_lock = threading.Lock()
 
 
 # fetches listener count + genre tags from Last.fm for an artist, caches result so we don't re-hit the API
 def get_track_info(artist, track):
-    if artist in _artist_cache:
-        return _artist_cache[artist]
+    # check cache under lock to avoid duplicate fetches from parallel threads
+    with _cache_lock:
+        if artist in _artist_cache:
+            return _artist_cache[artist]
+    # fetch outside the lock so threads don't block each other on network calls
     try:
         r = requests.get('https://ws.audioscrobbler.com/2.0/', params={
             'method': 'artist.getInfo',
@@ -41,23 +51,24 @@ def get_track_info(artist, track):
         data = r.json()['artist']
         listeners = int(data['stats']['listeners'])
         tags = [t['name'].lower() for t in data.get('tags', {}).get('tag', [])]
-        _artist_cache[artist] = [listeners, tags]
-        _save_cache(_artist_cache)
-        return listeners, tags
+        result = [listeners, tags]
     except:
-        return 0, []
+        result = [0, []]
+    with _cache_lock:
+        _artist_cache[artist] = result
+    return result[0], result[1]
 
 # re-ranks candidates by blending fused score with Last.fm listener count, applies genre boost/penalty
 def rerank_by_listeners(pool_idx, pool_scores, df, top_k, popularity_weight = 0.3, genre_song = None, genre_penalty = None):
 
-    listeners = []
-    tags = []
-    for i in pool_idx:
-        artist = df.loc[i, 'artists'].strip("[]'\"").split("'")[0]
-        track = df.loc[i, 'name']
-        popular, tag = get_track_info(artist, track)
-        listeners.append(popular)
-        tags.append(tag)
+    # build (artist, track) pairs then fetch all in parallel
+    pairs = [(df.loc[i, 'artists'].strip("[]'\"").split("'")[0], df.loc[i, 'name']) for i in pool_idx]
+    with ThreadPoolExecutor(max_workers=5) as executor:
+        results = list(executor.map(_fetch_one, pairs))
+    _save_cache(_artist_cache)  # single write after all threads complete
+    listeners = [r[0] for r in results]
+    tags = [r[1] for r in results]
+
     listeners = np.array(listeners, dtype=float)
 
     median_l = np.median(listeners[listeners > 0]) if (listeners > 0).any() else 1
@@ -95,6 +106,11 @@ def rerank_by_listeners(pool_idx, pool_scores, df, top_k, popularity_weight = 0.
 
     return pool_idx[top_local], listeners[top_local], final_score[top_local], song_meta
 
+
+# helper for parallel Last.fm fetches — takes (artist, track) tuple, returns (listeners, tags)
+def _fetch_one(args):
+    artist, track = args
+    return get_track_info(artist, track)
 
 # swaps the most-listened post-2000 song from the top 20 into slot 0 as a familiarity anchor
 def pin_anchor(top_global, listeners, final_scores, song_meta):
