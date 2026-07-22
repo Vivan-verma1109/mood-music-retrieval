@@ -3,7 +3,7 @@
 import numpy as np
 from backend.config import GENRE_ALIASES, GENRE_CLUSTERS
 from backend.Stage4Fusion.loader import df, embeddings, X_scaled, model, cluster_ids, cluster_centroids, audio_centroids, cluster_desc_embeddings
-from backend.Stage4Fusion.lastfm import rerank_by_listeners
+from backend.Stage4Fusion.lastfm import rerank_by_listeners, pin_anchor
 from backend.Stage0Data.years import years_cache, fetch_track_info, save_years_cache
 
 """
@@ -123,10 +123,14 @@ def query(mood_text, top_k = 10, pop_candidates = 100, alpha = 0.7, language = N
         sid = str(idx)
         if sid not in years_cache:
             years_cache[sid] = fetch_track_info(df.loc[idx, 'id'])
-            save_years_cache()
+            try:
+                save_years_cache()
+            except PermissionError:
+                pass  # non-fatal, will retry next query
 
     print(f"Fetching listener counts for top {pop_candidates} candidates...")
     top_global, listeners, final_scores, song_meta = rerank_by_listeners(pool_idx, pool_scores, df, top_k=50, genre_song=genre_aliases, genre_penalty=genre_penalty)
+    top_global, listeners, final_scores, song_meta = pin_anchor(top_global, listeners, final_scores, song_meta)  # pin most-listened to slot 0    
 
     results = df.loc[top_global, ['name', 'artists', 'mood', 'valence', 'energy', 'id']].copy()
     results['listeners'] = listeners.astype(int)

@@ -5,7 +5,7 @@ import numpy as np
 import requests
 import os
 from dotenv import load_dotenv
-
+from backend.Stage0Data.years import years_cache
 load_dotenv()
 LASTFM_KEY = os.environ['LASTFM_API_KEY']
 
@@ -94,3 +94,24 @@ def rerank_by_listeners(pool_idx, pool_scores, df, top_k, popularity_weight = 0.
     ]
 
     return pool_idx[top_local], listeners[top_local], final_score[top_local], song_meta
+
+
+# swaps the most-listened post-2000 song from the top 20 into slot 0 as a familiarity anchor
+def pin_anchor(top_global, listeners, final_scores, song_meta):
+    # sort top 20 by listeners desc, walk until we find one that isn't pre-2000
+    top20_order = np.argsort(listeners[:20])[::-1]
+    best = None
+    for i in top20_order:
+        info = years_cache.get(str(top_global[i]))
+        year = info.get('year') if info else None
+        if year is not None and year < 2000:
+            continue
+        best = int(i)
+        break
+    if best is None or best == 0:
+        return top_global, listeners, final_scores, song_meta
+    top_global[[0, best]] = top_global[[best, 0]]
+    listeners[[0, best]] = listeners[[best, 0]]
+    final_scores[[0, best]] = final_scores[[best, 0]]
+    song_meta[0], song_meta[best] = song_meta[best], song_meta[0]
+    return top_global, listeners, final_scores, song_meta

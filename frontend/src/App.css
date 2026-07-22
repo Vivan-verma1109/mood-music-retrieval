@@ -77,12 +77,24 @@ button:disabled {
     z-index: 1;
 }
 
-/* lays out the mood input, dropdowns, and button in a single horizontal row */
+/* stacks the mood row and filters row vertically */
 form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 32px;
+}
+
+/* mood input spans the full width of the form */
+.form-mood input {
+    width: 100%;
+}
+
+/* filters and buttons sit in a centered horizontal row */
+.form-filters {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
-    margin-bottom: 32px;
     justify-content: center;
 }
 

@@ -121,48 +121,54 @@ function App() {
         <div className="container">
             <h1>Mood Moosic</h1>
             <form onSubmit={handleSubmit}>
-                <input
-                    type="text"
-                    value={mood}
-                    onChange={e => setMood(e.target.value)}
-                />
-                <select value={genre} onChange={e => setGenre(e.target.value)}>
-                    <option value="">Any genre</option>
-                    <option value="hiphop">Hip Hop</option>
-                    <option value="pop">Pop</option>
-                    <option value="rock">Rock</option>
-                    <option value="rnb">R&B</option>
-                    <option value="electronic">Electronic</option>
-                    <option value="jazz">Jazz</option>
-                    <option value="classical">Classical</option>
-                    <option value="metal">Metal</option>
-                    <option value="lofi">Lo-Fi</option>
-                    <option value="kpop">K-Pop</option>
-                    <option value="anime">Anime</option>
-                    <option value="latin">Latin</option>
-                </select>
-                <select value={language} onChange={e => setLanguage(e.target.value)}>
-                    <option value="">Any language</option>
-                    <option value="en">English</option>
-                    <option value="es">Spanish</option>
-                    <option value="fr">French</option>
-                    <option value="ko">Korean</option>
-                    <option value="ja">Japanese</option>
-                    <option value="hi">Hindi</option>
-                    <option value="pt">Portuguese</option>
-                </select>
-                <input
-                    type="text"
-                    placeholder="Artist (optional)"
-                    value={artist}
-                    onChange={e => setArtist(e.target.value)}
-                />
-                <button type="submit" disabled={loading}>
-                    {loading ? 'Finding...' : 'Find Songs'}
-                </button>
-                <button type="button" className="refresh-btn" onClick={nextTen} disabled={cd || refreshCount >= 4 || results.length === 0}>
-                    Refresh
-                </button>
+                {/* mood query gets its own full-width row */}
+                <div className="form-mood">
+                    <input
+                        type="text"
+                        value={mood}
+                        onChange={e => setMood(e.target.value)}
+                    />
+                </div>
+                {/* filters and action buttons sit on the second row */}
+                <div className="form-filters">
+                    <select value={genre} onChange={e => setGenre(e.target.value)}>
+                        <option value="">Any genre</option>
+                        <option value="hiphop">Hip Hop</option>
+                        <option value="pop">Pop</option>
+                        <option value="rock">Rock</option>
+                        <option value="rnb">R&B</option>
+                        <option value="electronic">Electronic</option>
+                        <option value="jazz">Jazz</option>
+                        <option value="classical">Classical</option>
+                        <option value="metal">Metal</option>
+                        <option value="lofi">Lo-Fi</option>
+                        <option value="kpop">K-Pop</option>
+                        <option value="anime">Anime</option>
+                        <option value="latin">Latin</option>
+                    </select>
+                    <select value={language} onChange={e => setLanguage(e.target.value)}>
+                        <option value="">Any language</option>
+                        <option value="en">English</option>
+                        <option value="es">Spanish</option>
+                        <option value="fr">French</option>
+                        <option value="ko">Korean</option>
+                        <option value="ja">Japanese</option>
+                        <option value="hi">Hindi</option>
+                        <option value="pt">Portuguese</option>
+                    </select>
+                    <input
+                        type="text"
+                        placeholder="Artist (optional)"
+                        value={artist}
+                        onChange={e => setArtist(e.target.value)}
+                    />
+                    <button type="submit" disabled={loading}>
+                        {loading ? 'Finding...' : 'Find Songs'}
+                    </button>
+                    <button type="button" className="refresh-btn" onClick={nextTen} disabled={cd || refreshCount >= 4 || results.length === 0}>
+                        Refresh
+                    </button>
+                </div>
             </form>
 
               {results.length > 0 && (
