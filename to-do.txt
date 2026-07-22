@@ -43,12 +43,19 @@ Rewrite the 13 cluster descriptions — the one high-leverage fix. Feed Claude C
 Rerun eval_batch on the same 18 queries, rate the new songs that appear (old ratings still count — that's why pooled labels were worth it). Compare against tonight's baseline. Target: context queries (lift heavy, bbq, feels, chill driving) move from 0–25% toward 50%+. That before/after number is the payoff.
 While in there: instrumentalness filter for "no lyrics" queries — threshold on a feature you already have, 15 minutes.]
 
+- Anchor song (pin highest-listener song to slot 0)
 
-NOT STARTED
+
+Demo interface
+- React frontend + FastAPI backend
+- separate input boxes for mood (text), artist (text), genre (dropdown), language (dropdown), top_k (slider)
+- artist filter parsed from query text removed in favor of explicit UI input
+- show album art, Spotify links
 
 MAKE RESUTLKS MORE RECENT NOT OLD, feels like im 100 years old
 
-Backlog (only if time permits before recruiting peak):
+NOT STARTED
+if server not started show a different stating server screen
 
 Artist detection in free text (the poison-token fix) — real feature, well-scoped, not urgent
 Data-derived cluster embeddings (mean of member lyric embeddings) — the fallback if rewritten descriptions don't move the number
@@ -56,7 +63,6 @@ OAuth/playlist export — product polish, zero interview value, lowest priority
 
 
 And the shelved ideas:
-- Anchor song (pin highest-listener song to slot 0)
 - Year filter (once years_cache bulks up)
 - Artist filter bypasses cluster routing entirely
 
@@ -66,22 +72,10 @@ Exclude user's liked songs
 
 
 
-Demo interface
-- React frontend + FastAPI backend
-- separate input boxes for mood (text), artist (text), genre (dropdown), language (dropdown), top_k (slider)
-- artist filter parsed from query text removed in favor of explicit UI input
-- show album art, Spotify links
-
 Spotify playlist export
 - OAuth + POST /me/playlists + POST /playlists/{id}/items
 - create playlist directly from ranked results
 
-Filter by release year / era
-- e.g. "hype songs from the 2000s" → filter candidates to year range before scoring
-- dataset may not have release year — fetch via Last.fm track.getInfo or Spotify GET /tracks/{id}
-
-Learned fusion weights
-- small supervised layer to tune alpha if labeled mood->playlist data exists
 
 Parallelize Last.fm fetches
 - rerank_by_listeners() fetches one artist at a time, bottlenecks on 50 sequential HTTP calls
