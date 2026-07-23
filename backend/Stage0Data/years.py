@@ -61,9 +61,9 @@ def fetch_track_info(spotify_id):
             return {"year": None, "image": None}
         if resp.status_code == 429:
             wait = int(resp.headers.get('Retry-After', 5))
-            print(f"  [years] rate limited {wait}s — saving checkpoint and stopping")
+            print(f"  [years] rate limited {wait}s — saving checkpoint")
             save_years_cache()
-            raise SystemExit(f"Rate limited for {wait}s. Resume later.")
+            raise RuntimeError("spotify_rate_limited")
         if resp.status_code != 200:
             print(f"  [years] {resp.status_code} — {spotify_id}")
             return {"year": None, "image": None}
@@ -75,6 +75,8 @@ def fetch_track_info(spotify_id):
         print(f"  [years] {year} — {spotify_id}")
         time.sleep(0.2)
         return {"year": year, "image": image}
+    except RuntimeError:
+        raise  # let rate limit errors propagate up to fusion.py
     except Exception as e:
         print(f"  [years] error — {spotify_id}: {e}")
         return {"year": None, "image": None}

@@ -41,7 +41,7 @@ function SongCard({ r, rated, onFeedback }) {
 }
 
 function App() {
-    const [mood, setMood] = useState("I'm feeling ")
+    const [mood, setMood] = useState('')
     const [genre, setGenre] = useState('')
     const [language, setLanguage] = useState('en')
     const [artist, setArtist] = useState('')
@@ -125,6 +125,7 @@ function App() {
                 <div className="form-mood">
                     <input
                         type="text"
+                        placeholder="Describe a mood, vibe, or activity..."
                         value={mood}
                         onChange={e => setMood(e.target.value)}
                     />

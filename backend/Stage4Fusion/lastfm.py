@@ -58,6 +58,11 @@ def get_track_info(artist, track):
         _artist_cache[artist] = result
     return result[0], result[1]
 
+# helper for parallel Last.fm fetches — takes (artist, track) tuple, returns (listeners, tags)
+def _fetch_one(args):
+    artist, track = args
+    return get_track_info(artist, track)
+
 # re-ranks candidates by blending fused score with Last.fm listener count, applies genre boost/penalty
 def rerank_by_listeners(pool_idx, pool_scores, df, top_k, popularity_weight = 0.3, genre_song = None, genre_penalty = None):
 
@@ -106,11 +111,6 @@ def rerank_by_listeners(pool_idx, pool_scores, df, top_k, popularity_weight = 0.
 
     return pool_idx[top_local], listeners[top_local], final_score[top_local], song_meta
 
-
-# helper for parallel Last.fm fetches — takes (artist, track) tuple, returns (listeners, tags)
-def _fetch_one(args):
-    artist, track = args
-    return get_track_info(artist, track)
 
 # swaps the most-listened post-2000 song from the top 20 into slot 0 as a familiarity anchor
 def pin_anchor(top_global, listeners, final_scores, song_meta):
