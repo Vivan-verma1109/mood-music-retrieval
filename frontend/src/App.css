@@ -112,6 +112,7 @@ form {
     border-radius: 8px;
     padding: 8px;
     color: white;
+    position: relative;
 }
 
 /* row of emoji feedback buttons at the top of each card */
@@ -121,9 +122,12 @@ form {
     margin-bottom: 6px;
 }
 
-.card-feedback button {
+.feedback-btn {
+    background: none;
+    border: none;
     font-size: 12px;
     padding: 2px;
+    cursor: pointer;
 }
 
 /* wraps the album art + text and makes the whole block a clickable Spotify link */
@@ -199,4 +203,51 @@ form {
     color: #aaa;
     margin-top: 16px;
     font-size: 14px;
+}
+
+/* wrapper holds avatar + button together in top-right corner */
+.spotify-connect-wrapper {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* small circular profile picture */
+.spotify-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* fixed top-right spotify connect button */
+.spotify-connect-btn {
+    background: #1db954;
+    color: black;
+    font-weight: bold;
+    padding: 8px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.spotify-connect-btn:disabled {
+    background: #1db95466;
+    cursor: default;
+}
+
+/* heart like button — pinned to bottom-right of card */
+.like-btn {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    color: #1db954;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 0;
 }

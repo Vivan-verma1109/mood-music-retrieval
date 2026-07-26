@@ -6,14 +6,23 @@ import math
 import json
 import os
 import numpy as np
+import requests
+import datetime
+from backend.auth.db import SessionLocal
+from backend.auth.models import SpotifyToken
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 from backend.Stage4Fusion.fusion import query
 from backend.Stage0Data.years import years_cache
+from backend.auth.routes import router as auth_router
+from backend.auth.db import engine, Base
+from backend.auth import models  # registers models so create_all sees them
 
 app = FastAPI()
+app.include_router(auth_router)
+Base.metadata.create_all(bind=engine)  # creates spotify_tokens table if it doesn't exist
 
 # allow the React dev server to call this API (browsers block cross-origin requests by default)
 app.add_middleware(
@@ -44,6 +53,10 @@ class FeedbackRequest(BaseModel):
 class PageRequest(BaseModel):
     request_id: str
     offset: int
+
+class LikeRequest(BaseModel):
+    spotify_id: str
+
 
 # runs the full pipeline and returns the first 10 songs, caches the full pool for paging
 @app.post("/query")
@@ -105,3 +118,48 @@ def next_page(req: PageRequest):
     for r in page:
         r['image'] = (years_cache.get(r['song_id']) or {}).get('image')
     return {"results": page}
+
+
+
+# gets the stored token, refreshes it if expired, returns the access token string
+def _get_spotify_token():
+    db = SessionLocal()
+    token = db.query(SpotifyToken).first()
+    if not token:
+        db.close()
+        raise HTTPException(status_code=401, detail="Not connected to Spotify")
+    if token.expires_at < datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None):
+        resp = requests.post('https://accounts.spotify.com/api/token', data={
+            'grant_type': 'refresh_token',
+            'refresh_token': token.refresh_token,
+        }, auth=(os.getenv('SPOTIFY_CLIENT_ID'), os.getenv('SPOTIFY_CLIENT_SECRET')))
+        data = resp.json()
+        token.access_token = data['access_token']
+        token.expires_at = datetime.datetime.now(datetime.timezone.utc).replace(tzinfo=None) + datetime.timedelta(seconds=data['expires_in'])
+        db.commit()
+    access_token = token.access_token
+    db.close()
+    return access_token
+
+@app.post("/like")
+def like_song(req: LikeRequest):
+    access_token = _get_spotify_token()
+    resp = requests.put(
+        f'https://api.spotify.com/v1/me/library?uris=spotify:track:{req.spotify_id}',
+        headers={'Authorization': f'Bearer {access_token}'},
+    )
+    if resp.status_code not in (200, 201):
+        raise HTTPException(status_code=502, detail="Spotify API error")
+    return {"status": "ok"}
+
+# removes a track from the user's spotify liked songs
+@app.post("/unlike")
+def unlike_song(req: LikeRequest):
+    access_token = _get_spotify_token()
+    resp = requests.delete(
+        f'https://api.spotify.com/v1/me/library?uris=spotify:track:{req.spotify_id}',
+        headers={'Authorization': f'Bearer {access_token}'},
+    )
+    if resp.status_code not in (200, 201):
+        raise HTTPException(status_code=502, detail="Spotify API error")
+    return {"status": "ok"}

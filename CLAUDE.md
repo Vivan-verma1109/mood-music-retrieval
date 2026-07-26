@@ -109,7 +109,7 @@ User mood query (text) + optional genre / language / artist filters
 14. [ ] Rerun eval_batch on same 18 queries, rate new songs only, record before/after precision on context queries
 15. [ ] Instrumentalness threshold filter for "no lyrics" queries
 16. [ ] Genre hard filter (Last.fm track.getTopTags) — replace current score boost
-17. [ ] Spotify OAuth + PostgreSQL (SQLAlchemy) for token storage
+17. [x] Spotify OAuth + PostgreSQL (SQLAlchemy) for token storage
 18. [ ] Spotify playlist export (POST /me/playlists)
 19. [ ] Filter out user's liked songs from results
 20. [x] Lazy year + album art fetch via Spotify GET /tracks/{id}, cached to years_cache.json
@@ -144,9 +144,12 @@ User mood query (text) + optional genre / language / artist filters
 - **Spotify availability check removed**: was calling Spotify search API per song to verify availability. Redundant now that `spotify_id` from the dataset is used directly for links — the ID is already valid.
 - **Paging via /page endpoint**: full ranked pool of 50 cached under request_id for 30 min. Frontend can page through in slices of 10 without re-running SBERT routing or fusion. Images attached per page, not upfront.
 - **Lazy year + image fetch**: Spotify GET /tracks/{id} called at query time for uncached songs only. Results stored in years_cache.json with {year, image} per song_id. 200ms sleep between calls, Retry-After on 429 saves cache and exits.
+- **Spotify like/unlike endpoint**: `PUT/DELETE /v1/me/library?uris=spotify:track:{id}` — NOT `/v1/me/tracks` which returns 403 for dev-mode apps after Spotify's 2025 API restrictions.
+- **Spotify OAuth token storage**: PostgreSQL `spotify_tokens` table via SQLAlchemy. Single-user app so `.first()` is used to retrieve the token. Upsert on re-login.
+- **Auto-like after OAuth**: pending spotify_id stored in localStorage before redirect, fired on callback return via useEffect watching spotifyConnected.
 
 ## Stack
-- **Backend**: FastAPI (Python), PostgreSQL + SQLAlchemy (planned, for OAuth token storage)
+- **Backend**: FastAPI (Python), PostgreSQL + SQLAlchemy (OAuth token storage — live)
 - **Frontend**: React (Vite)
 - **ML pipeline**: lives in backend/ — numpy, pandas, SBERT, FAISS, scikit-learn
 

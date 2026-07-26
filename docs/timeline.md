@@ -82,9 +82,17 @@
   3. Hard constraint queries ("no lyrics") that embeddings can't honor → fix: instrumentalness threshold filter
 - Root cause identified: cluster descriptions — clusters 6/11 and 1/5 are near-synonyms in embedding space, and none of the 13 descriptions contain activity/context vocabulary
 
+## Stage 12 — Spotify OAuth + Like Feature (July 2026)
+- Spotify auth flow: `/auth/spotify` redirects to Spotify login, `/auth/callback` exchanges code for tokens, stores in PostgreSQL via SQLAlchemy
+- Token storage: `spotify_tokens` table (id, spotify_user_id, access_token, refresh_token, expires_at), upsert on re-login
+- Like/unlike: `PUT/DELETE /v1/me/library?uris=spotify:track:{id}` — note: `/v1/me/tracks` returns 403 in dev mode, unified library endpoint works
+- Auto-like after OAuth: pending spotify_id saved to localStorage before redirect, fired automatically on callback return
+- Frontend: "Connect Spotify" button fixed top-right shows avatar + display name when connected; heart icon bottom-right of each card toggles like/unlike
+- **Decision: PostgreSQL over SQLite** — consistent with long-term plan, no migration needed later
+- **Decision: `/v1/me/library` endpoint** — `/v1/me/tracks` restricted for dev apps as of 2025 API crackdown
+
 ## Remaining Milestones
-- Rewrite cluster descriptions (separate 6/11 and 1/5, add activity/context vocabulary)
 - Genre hard filter via track.getTopTags
 - Instrumentalness threshold filter for "no lyrics" style queries
-- Spotify OAuth + playlist export (PostgreSQL/SQLAlchemy)
+- Feedback button UI — current emoji buttons look like system emoji, not native; backlogged
 - Liked songs filter, era filter

@@ -3,8 +3,24 @@ import { useState, useEffect } from 'react'
 import './App.css'
 import Bubbles from './Bubbles'
 
-function SongCard({ r, rated, onFeedback }) {
+function SongCard({ r, rated, onFeedback, onLike }) {
     const [img, setImg] = useState(r.image || null)
+    const [liked, setLiked] = useState(false)
+
+    // handles heart click — likes if not liked, unlikes if already liked
+    async function handleHeartClick() {
+        if (liked) {
+            await fetch('http://127.0.0.1:8000/unlike', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ spotify_id: r.spotify_id }),
+            })
+            setLiked(false)
+        } else {
+            await onLike(r.spotify_id)
+            setLiked(true)
+        }
+    }
 
     useEffect(() => {
         setImg(r.image || null)
@@ -19,11 +35,12 @@ function SongCard({ r, rated, onFeedback }) {
     return (
         <div className="card">
             <div className="card-feedback">
-                <button onClick={() => onFeedback(r.song_id, 'great')} disabled={rated.has(r.song_id)}>🔥</button>
-                <button onClick={() => onFeedback(r.song_id, 'good')} disabled={rated.has(r.song_id)}>👍</button>
-                <button onClick={() => onFeedback(r.song_id, 'bad')} disabled={rated.has(r.song_id)}>👎</button>
-                <button onClick={() => onFeedback(r.song_id, 'terrible')} disabled={rated.has(r.song_id)}>🗑️</button>
+                <button className="feedback-btn" onClick={() => onFeedback(r.song_id, 'great')} disabled={rated.has(r.song_id)}>🔥</button>
+                <button className="feedback-btn" onClick={() => onFeedback(r.song_id, 'good')} disabled={rated.has(r.song_id)}>👍</button>
+                <button className="feedback-btn" onClick={() => onFeedback(r.song_id, 'bad')} disabled={rated.has(r.song_id)}>👎</button>
+                <button className="feedback-btn" onClick={() => onFeedback(r.song_id, 'terrible')} disabled={rated.has(r.song_id)}>🗑️</button>
             </div>
+            <button className="like-btn" onClick={handleHeartClick}>{liked ? '♥' : '♡'}</button>
             <a href={`https://open.spotify.com/track/${r.spotify_id}`} target="_blank" rel="noreferrer" className="card-body">
                 <div className="card-img-wrapper">
                     {img
@@ -55,6 +72,46 @@ function App() {
     const [refreshCount, setRefreshCount] = useState(0)
     const [cd, setCd] = useState(false)
 
+    const [spotifyConnected, setSpotifyConnected] = useState(false)
+    const [spotifyUser, setSpotifyUser] = useState(null)
+    const [spotifyAvatar, setSpotifyAvatar] = useState(null)
+
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search)
+        if (params.get("spotify") === 'connected'){
+            setSpotifyConnected(true)
+            setSpotifyUser(params.get('spotify_user'))
+            setSpotifyAvatar(params.get('spotify_avatar'))
+            window.history.replaceState({}, '', '/') // cleanup URL
+        }
+    }, [])
+
+    useEffect(() => {
+        if (!spotifyConnected) return
+        const pendingId = localStorage.getItem('pending_like')
+        if (!pendingId) return
+        localStorage.removeItem('pending_like')
+        fetch('http://127.0.0.1:8000/like', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ spotify_id: pendingId }),
+        })
+    }, [spotifyConnected])
+
+  // handles heart click — likes directly if connected, otherwise saves id and redirects to spotify login
+  async function handleLike(spotify_id) {
+      if (spotifyConnected) {
+          await fetch('http://127.0.0.1:8000/like', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ spotify_id }),
+          })
+      } else {
+          localStorage.setItem('pending_like', spotify_id)
+          window.location.href = 'http://127.0.0.1:8000/auth/spotify'
+      }
+  }
+
     // called when the form is submitted — runs the full query and resets all pagination state
     async function handleSubmit(e) {
         if (e)
@@ -80,6 +137,7 @@ function App() {
         } finally {
             // always re-enable the button, whether request succeeded, failed, or timed out
             clearTimeout(timeout)
+            
             setLoading(false)
         }
     }
@@ -118,6 +176,18 @@ function App() {
     return (
         <>
         <Bubbles />
+        <div className="spotify-connect-wrapper">
+            {spotifyConnected && spotifyAvatar && (
+                <img src={spotifyAvatar} className="spotify-avatar" alt="profile" />
+            )}
+            <button
+                className="spotify-connect-btn"
+                onClick={() => window.location.href = 'http://127.0.0.1:8000/auth/spotify'}
+                disabled={spotifyConnected}
+            >
+                {spotifyConnected ? `Connected: ${spotifyUser}` : 'Connect Spotify'}
+            </button>
+        </div>
         <div className="container">
             <h1>Mood Moosic</h1>
             <form onSubmit={handleSubmit}>
@@ -175,7 +245,7 @@ function App() {
               {results.length > 0 && (
                   <div className="results-grid">
                       {results.map((r, i) => (
-                          <SongCard key={r.song_id} r={r} rated={rated} onFeedback={submitFeedback} />
+                          <SongCard key={r.song_id} r={r} rated={rated} onFeedback={submitFeedback} onLike={handleLike} />
                       ))}
                   </div>
               )}
