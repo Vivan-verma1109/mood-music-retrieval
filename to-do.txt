@@ -46,6 +46,10 @@ While in there: instrumentalness filter for "no lyrics" queries — threshold on
 - Anchor song (pin highest-listener song to slot 0)
 
 
+Parallelize Last.fm fetches
+- rerank_by_listeners() fetches one artist at a time, bottlenecks on 50 sequential HTTP calls
+- use ThreadPoolExecutor to fire all requests concurrently
+
 Demo interface
 - React frontend + FastAPI backend
 - separate input boxes for mood (text), artist (text), genre (dropdown), language (dropdown), top_k (slider)
@@ -77,6 +81,7 @@ Spotify playlist export
 - create playlist directly from ranked results
 
 
-Parallelize Last.fm fetches
-- rerank_by_listeners() fetches one artist at a time, bottlenecks on 50 sequential HTTP calls
-- use ThreadPoolExecutor to fire all requests concurrently
+logout featyre
+
+
+change emojis
