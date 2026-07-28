@@ -23,6 +23,8 @@ User mood query (text) + optional genre / language / artist filters
         ↓
   cluster routing (genre → GENRE_CLUSTERS, or semantic SBERT cosine sim against cluster descriptions)
         ↓
+  LLM expansion gate (if top-1 cosine < 0.45 OR top cluster == 0, call Claude Haiku to rewrite query into mood/audio vocab, re-embed, re-route)
+        ↓
   candidate song pool filtered by language + artist
         ↓
   lyric + audio cosine similarity scoring
@@ -118,6 +120,8 @@ User mood query (text) + optional genre / language / artist filters
 23. [ ] Release year / era filtering (needs years_cache to bulk up first)
 24. [ ] Artist filter bypasses cluster routing entirely
 25. [ ] Bulk year/image enrichment script for hot catalog songs
+26. [x] LLM query expansion — fallback gate on low-confidence routing, Claude Haiku with 3-shot prompt, re-embeds expanded text
+27. [ ] Cluster 0 description rewrite — too broad, scores moderately against unrelated queries even after expansion
 
 ---
 
@@ -147,6 +151,9 @@ User mood query (text) + optional genre / language / artist filters
 - **Spotify like/unlike endpoint**: `PUT/DELETE /v1/me/library?uris=spotify:track:{id}` — NOT `/v1/me/tracks` which returns 403 for dev-mode apps after Spotify's 2025 API restrictions.
 - **Spotify OAuth token storage**: PostgreSQL `spotify_tokens` table via SQLAlchemy. Single-user app so `.first()` is used to retrieve the token. Upsert on re-login.
 - **Auto-like after OAuth**: pending spotify_id stored in localStorage before redirect, fired on callback return via useEffect watching spotifyConnected.
+- **LLM expansion trigger**: top-1 cosine < 0.45 OR top_cluster == 0. Threshold derived from routing score audit (melancholic=0.659, Sonic=0.388, drake=0.345, workout=0.307). Fires only on semantic_sbert path, not genre_lookup.
+- **Expansion prompt**: 3-shot examples covering pop-culture (Sonic), artist-ref (SZA), and activity/context (bbq) failure modes. Output constrained to 5-8 comma-separated terms. Returns None on failure → falls back to original routing.
+- **Cluster 0 band-aid deferred**: excluding cluster 0 on llm_expanded queries would work short-term but hardcodes a bad assumption. Real fix is rewriting cluster 0's description so it stops scoring broadly against unrelated queries (milestone 27).
 
 ## Stack
 - **Backend**: FastAPI (Python), PostgreSQL + SQLAlchemy (OAuth token storage — live)

@@ -91,6 +91,14 @@
 - **Decision: PostgreSQL over SQLite** — consistent with long-term plan, no migration needed later
 - **Decision: `/v1/me/library` endpoint** — `/v1/me/tracks` restricted for dev apps as of 2025 API crackdown
 
+## Stage 13 — LLM Query Expansion (July 2026)
+- Root cause: activity/context queries (bbq, lift heavy) and artist-reference queries (drake, SZA, frank ocean) routing to cluster 0 (catch-all) with false confidence, or scoring below 0.45 against all cluster descriptions
+- Routing score audit: good queries score 0.5+ (melancholic=0.659), bad ones cluster 0.3–0.4 (Sonic=0.388, drake=0.345, workout=0.307)
+- Fix: expansion gate in fusion.py — if top-1 cosine < 0.45 OR top_cluster == 0, call Claude Haiku to rewrite query into mood/audio vocabulary, re-embed, re-route
+- Prompt is 3-shot: covers pop-culture (Sonic), artist-ref (SZA), activity/context (bbq) failure modes; output constrained to 5-8 terms
+- Falls back to original routing silently if API call fails
+- **Remaining**: cluster 0's description is still too broad — scores into top-3 even after expansion produces a specific description. Band-aid (exclude cluster 0 on llm_expanded) deferred in favor of proper cluster 0 description rewrite (milestone 27)
+
 ## Remaining Milestones
 - Genre hard filter via track.getTopTags
 - Instrumentalness threshold filter for "no lyrics" style queries

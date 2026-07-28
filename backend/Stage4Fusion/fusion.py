@@ -69,8 +69,23 @@ def query(mood_text, top_k = 10, pop_candidates = 100, alpha = 0.7, language = N
     else:
         _desc_embeddings = desc_embeddings if desc_embeddings is not None else cluster_desc_embeddings
         sims = (_desc_embeddings @ query_emb.T).squeeze()
+        top1_score = float(np.max(sims))
+        top1_cluster = int(np.argmax(sims))
+
+        if top1_score < 0.45 or top1_cluster == 0:
+            from backend.Stage4Fusion.expand_query import expand_query
+            expanded = expand_query(mood_text)
+            if expanded:
+                print(f"[expand] '{mood_text}' → '{expanded}'")
+                expanded_emb = model.encode([expanded], normalize_embeddings=True).astype('float32')
+                sims = (_desc_embeddings @ expanded_emb.T).squeeze()
+                routing_strategy = "llm_expanded"
+            else:
+                routing_strategy = "semantic_sbert"
+        else:
+            routing_strategy = "semantic_sbert"
+
         cluster_ids_matched = np.array(cluster_ids)[np.argsort(sims)[::-1][:3]].tolist()
-        routing_strategy = "semantic_sbert"
 
     artists = [artist] if artist else None
     # resolve genre string to Last.fm tag aliases for the boost step
