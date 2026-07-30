@@ -58,23 +58,17 @@ Demo interface
 
 MAKE RESUTLKS MORE RECENT NOT OLD, feels like im 100 years old
 
+rewrote clister 0
+
 NOT STARTED
 if server not started show a different stating server screen
 
-Artist detection in free text (the poison-token fix) — real feature, well-scoped, not urgent
-Data-derived cluster embeddings (mean of member lyric embeddings) — the fallback if rewritten descriptions don't move the number
+
 OAuth/playlist export — product polish, zero interview value, lowest priority
 
 
 And the shelved ideas:
 - Year filter (once years_cache bulks up)
-- Artist filter bypasses cluster routing entirely
-
-Exclude user's liked songs
-- Spotify OAuth (Authorization Code flow) to get user's saved tracks
-- filter out already-liked songs from results so playlist is always fresh
-
-
 
 Spotify playlist export
 - OAuth + POST /me/playlists + POST /playlists/{id}/items
@@ -85,5 +79,3 @@ logout featyre
 
 
 change emojis
-
-rewrite cluster 0
