@@ -2,7 +2,7 @@
 # cluster_descriptions are embedded at startup in loader.py and used for cosine-sim cluster routing in fusion.py.
 
 cluster_descriptions = {
-    0:  "Mixed moody popular music. A broad blend of downcast pop, alternative, and atmospheric rock without one defining sound. Subdued and mid tempo. No specific activity or setting.",
+    0:  "Subdued mid-tempo produced pop and alternative. Emotionally muted — low-to-moderate valence, neither deeply sad nor euphoric. Mid energy, electric rather than acoustic, sung vocals. A mixed grab-bag of downcast pop, soft alternative, and atmospheric tracks that don't fit neatly into a single mood. Background listening for quiet or undefined emotional states.",
     1:  "Produced groove and studio R&B. Dancehall, smooth R&B, hip-hop-adjacent soul, reggae, and funk with polished production and electronic rhythm beds. The groove is tight and studio-built. Kicking back, late nights in, cruise control, chill evenings with friends.",
     2:  "Warm vintage acoustic classics. Crooners, classic country, oldies, tango, and timeless standards with a relaxed, nostalgic, easygoing feel. Sunday morning coffee, cooking dinner, lazy afternoons, music your grandparents loved.",
     3:  "Energetic instrumental electronic. Techno, trance, house, and synth-driven dance music with pulsing beats and few or no vocals. Night driving, raves, coding sessions with driving beats, late night energy.",
