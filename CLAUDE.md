@@ -121,7 +121,7 @@ User mood query (text) + optional genre / language / artist filters
 24. [ ] Artist filter bypasses cluster routing entirely
 25. [ ] Bulk year/image enrichment script for hot catalog songs
 26. [x] LLM query expansion — fallback gate on low-confidence routing, Claude Haiku with 3-shot prompt, re-embeds expanded text
-27. [ ] Cluster 0 description rewrite — too broad, scores moderately against unrelated queries even after expansion
+27. [x] Cluster 0 description rewrite — too broad, scores moderately against unrelated queries even after expansion
 
 ---
 

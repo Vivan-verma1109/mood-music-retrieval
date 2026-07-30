@@ -99,6 +99,13 @@
 - Falls back to original routing silently if API call fails
 - **Remaining**: cluster 0's description is still too broad — scores into top-3 even after expansion produces a specific description. Band-aid (exclude cluster 0 on llm_expanded) deferred in favor of proper cluster 0 description rewrite (milestone 27)
 
+## Stage 14 — Cluster 0 Description Rewrite (July 2026)
+- Diagnosed cluster 0 leaking into expansion-routed results (bbq at 0.601, lift heavy at 0.528) despite expansion producing specific descriptions
+- PCA scatter of 73k cluster 0 songs (45% variance explained) showed one continuous blob — no separable sub-groups, splitting ruled out
+- Old description: "Mixed moody popular music... No specific activity or setting" — too generic, scored moderately against almost any query
+- New description emphasizes what cluster 0 IS (subdued, mid-energy, produced, vocal) and what it's NOT (high energy, acoustic, deeply emotional)
+- Validation: bbq similarity to cluster 0 dropped 0.601 → 0.480, lift heavy 0.528 → 0.479, late night chill 0.320 → 0.255
+
 ## Remaining Milestones
 - Genre hard filter via track.getTopTags
 - Instrumentalness threshold filter for "no lyrics" style queries
