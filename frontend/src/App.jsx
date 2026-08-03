@@ -180,13 +180,31 @@ function App() {
             {spotifyConnected && spotifyAvatar && (
                 <img src={spotifyAvatar} className="spotify-avatar" alt="profile" />
             )}
-            <button
-                className="spotify-connect-btn"
-                onClick={() => window.location.href = 'http://127.0.0.1:8000/auth/spotify'}
-                disabled={spotifyConnected}
-            >
-                {spotifyConnected ? `Connected: ${spotifyUser}` : 'Connect Spotify'}
-            </button>
+            {spotifyConnected ? (
+                <>
+                    <span className="spotify-connect-btn" style={{cursor: 'default'}}>
+                        Connected: {spotifyUser}
+                    </span>
+                    <button
+                        className="spotify-connect-btn"
+                        onClick={async () => {
+                            await fetch('http://127.0.0.1:8000/auth/logout', { method: 'POST' })
+                            setSpotifyConnected(false)
+                            setSpotifyUser(null)
+                            setSpotifyAvatar(null)
+                        }}
+                    >
+                        Log out
+                    </button>
+                </>
+            ) : (
+                <button
+                    className="spotify-connect-btn"
+                    onClick={() => window.location.href = 'http://127.0.0.1:8000/auth/spotify'}
+                >
+                    Connect Spotify
+                </button>
+            )}
         </div>
         <div className="container">
             <h1>Mood Moosic</h1>

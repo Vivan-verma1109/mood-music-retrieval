@@ -10,8 +10,9 @@ import requests
 import datetime
 from backend.auth.db import SessionLocal
 from backend.auth.models import SpotifyToken
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Optional
 from backend.Stage4Fusion.fusion import query
@@ -31,6 +32,26 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# set to True once loader.py has finished loading weights on startup
+_ready = False
+
+@app.on_event("startup")
+async def startup():
+    global _ready
+    # loader.py runs on import (triggered by fusion.py), so weights are already in memory by now
+    _ready = True
+
+# reject all non-health requests until weights are loaded
+@app.middleware("http")
+async def readiness_gate(request: Request, call_next):
+    if not _ready and request.url.path != "/health":
+        return JSONResponse({"error": "loading"}, status_code=503)
+    return await call_next(request)
+
+@app.get("/health")
+def health():
+    return {"ready": _ready}
 
 # request_id -> {songs: per_song dict, expires_at: float}
 _request_cache = {}

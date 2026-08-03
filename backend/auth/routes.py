@@ -71,3 +71,12 @@ def spotify_callback(code: str):
     db.close()
 
     return RedirectResponse(f'http://localhost:5173?spotify=connected&spotify_user={display_name}&spotify_avatar={avatar}')
+
+# clears the stored spotify token, effectively logging the user out
+@router.post('/auth/logout')
+def spotify_logout():
+    db = SessionLocal()
+    db.query(SpotifyToken).delete()
+    db.commit()
+    db.close()
+    return {"status": "ok"}
