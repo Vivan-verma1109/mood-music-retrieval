@@ -129,13 +129,13 @@ def submit_feedback(req: FeedbackRequest):
     return {"status": "ok"}
 
 # slices the next 10 songs from the cached pool without re-running the pipeline
-@app.post("/page")
-def next_page(req: PageRequest):
-    entry = _request_cache.get(req.request_id)
+@app.get("/page")
+def next_page(request_id: str, offset: int):
+    entry = _request_cache.get(request_id)
     if not entry or time.time() > entry["expires_at"]:
-        _request_cache.pop(req.request_id, None)
+        _request_cache.pop(request_id, None)
         raise HTTPException(status_code=410, detail="Request expired")
-    page = entry["pool"][req.offset: req.offset + 10]
+    page = entry["pool"][offset: offset + 10]
     for r in page:
         r['image'] = (years_cache.get(r['song_id']) or {}).get('image')
     return {"results": page}
@@ -174,7 +174,7 @@ def like_song(req: LikeRequest):
     return {"status": "ok"}
 
 # removes a track from the user's spotify liked songs
-@app.post("/unlike")
+@app.delete("/unlike")
 def unlike_song(req: LikeRequest):
     access_token = _get_spotify_token()
     resp = requests.delete(

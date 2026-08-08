@@ -11,7 +11,7 @@ function SongCard({ r, rated, onFeedback, onLike }) {
     async function handleHeartClick() {
         if (liked) {
             await fetch('http://127.0.0.1:8000/unlike', {
-                method: 'POST',
+                method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ spotify_id: r.spotify_id }),
             })
@@ -155,10 +155,8 @@ function App() {
     async function nextTen(){
         const newOffset = offset + 10
         setCd(true)
-        const res = await fetch('http://localhost:8000/page', {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-            body:  JSON.stringify({ request_id: requestId, offset: newOffset}),
+        const res = await fetch(`http://localhost:8000/page?request_id=${requestId}&offset=${newOffset}`, {
+            method: "GET",
         })
         if (res.status === 410){
             handleSubmit()
