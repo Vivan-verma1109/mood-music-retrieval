@@ -70,7 +70,7 @@ def spotify_callback(code: str):
     db.commit()
     db.close()
 
-    return RedirectResponse(f'http://localhost:5173?spotify=connected&spotify_user={display_name}&spotify_avatar={avatar}')
+    return RedirectResponse(f'https://moodml.vercel.app?spotify=connected&spotify_user={display_name}&spotify_avatar={avatar}')
 
 # clears the stored spotify token, effectively logging the user out
 @router.post('/auth/logout')
