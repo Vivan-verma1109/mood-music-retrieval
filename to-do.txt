@@ -81,3 +81,14 @@ Spotify playlist export
 
 
 change emojis
+
+
+Yep, that’s the nice part. Since it’s built with LangChain pieces, adding to it is easy. A few ideas that would actually look good:
+
+Follow up chat: “more like the third song,” using conversation memory.
+
+Playlist summary: a one line vibe description for the whole set, not just each song.
+
+Groundedness check: automatically verify each blurb actually matches its lyric snippet. That’s very on brand with your eval story.
+
+But that’s for after the interview and midterm. This week, the project is good as is.
