@@ -184,6 +184,17 @@ form {
     text-overflow: ellipsis;
 }
 
+/* mood blurb — wraps instead of truncating, clamped to 3 lines so it doesn't blow out the card */
+.card-blurb {
+    font-size: 11px;
+    color: #888;
+    margin-top: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
 /* refresh button — same green as Find Songs, fades when disabled */
 .refresh-btn {
     background: #1db954;

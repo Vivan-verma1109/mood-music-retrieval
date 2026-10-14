@@ -103,6 +103,12 @@ def run_query(req: QueryRequest):
     first_page = records[:10]
     for r in first_page:
         r['image'] = (years_cache.get(r['song_id']) or {}).get('image')
+
+    if first_page:
+        blurbs = generate_blurbs(req.mood, [r['song_id'] for r in first_page])
+        for r in first_page:
+            r['blurb'] = blurbs.get(r['song_id'])
+
     return {"request_id": request_id, "results": first_page}
 
 # saves a thumbs up/down rating for a song to feedback.jsonl

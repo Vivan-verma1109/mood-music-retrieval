@@ -48,7 +48,8 @@ def generate_blurbs(mood_text, song_ids):
     chain = _PROMPT | _get_llm()
     try:
         response = chain.invoke({"mood": mood_text, "songs": formatted})
-    except Exception:
+    except Exception as e:
+        print(f"[explain_chain] blurb generation failed: {e}")
         return {}
 
     blurbs = _parse_blurbs(response.content)
