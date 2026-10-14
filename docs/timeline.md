@@ -106,6 +106,18 @@
 - New description emphasizes what cluster 0 IS (subdued, mid-energy, produced, vocal) and what it's NOT (high energy, acoustic, deeply emotional)
 - Validation: bbq similarity to cluster 0 dropped 0.601 → 0.480, lift heavy 0.528 → 0.479, late night chill 0.320 → 0.255
 
+## Stage 15 — LangChain Generation Layer (October 2026)
+- Added a generation step on top of the existing ranked pool — turns the retrieval system into true RAG (retrieval + generation), not just the retrieval half
+- Built with LangChain specifically (not a raw Claude API call) so the library claim is honest: `backend/Stage5Explain/`
+  - `SongLyricsRetriever(BaseRetriever)` — for a page's songs, splits each song's lyrics into word chunks (lyrics' newlines are wrap artifacts, not real verse breaks, so chunking ignores them), embeds the chunks with the existing SBERT model, cosine-sims each against the mood query embedding, and returns the single best-matching chunk per song as a `Document`
+  - `explain_chain.generate_blurbs()` — `ChatPromptTemplate | ChatAnthropic` (Haiku) chain takes the retrieved snippets and writes one grounded sentence per song explaining why it fits the mood
+- **Decision: lazy, per-page generation** — blurbs are only generated for the 10 songs on whichever page is actually requested (first page via `/query`, later pages via `/page`), not all 50 cached candidates upfront — same lazy pattern as the existing image/year fetch
+- **Decision: one Haiku call per page, not per song** — all 10 songs' snippets go in a single prompt, constrained to a `song_id: blurb` output format (same philosophy as `expand_query.py`'s constrained output) for reliable parsing
+- **Decision: validate before trusting LLM output** — parsed blurbs are filtered to only keep `song_id`s that were actually in the request, in case Haiku hallucinates or skips one
+- Fails gracefully: a bad/missing `ANTHROPIC_API_KEY` or any API error returns `{}` instead of breaking the page — songs still render, just without a blurb
+- Missing-lyrics songs (NaN in the `lyrics` column) are skipped in the retriever instead of crashing
+- requirements.txt updated: `langchain`, `langchain-core`, `langchain-anthropic`, `langchain-protocol`
+
 ## Remaining Milestones
 - Genre hard filter via track.getTopTags
 - Instrumentalness threshold filter for "no lyrics" style queries

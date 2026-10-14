@@ -10,7 +10,7 @@ function SongCard({ r, rated, onFeedback, onLike }) {
     // handles heart click — likes if not liked, unlikes if already liked
     async function handleHeartClick() {
         if (liked) {
-            await fetch('http://localhost:8000/unlike', {
+            await fetch('https://moodmoosic.duckdns.org/unlike', {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ spotify_id: r.spotify_id }),
@@ -92,7 +92,7 @@ function App() {
         const pendingId = localStorage.getItem('pending_like')
         if (!pendingId) return
         localStorage.removeItem('pending_like')
-        fetch('http://localhost:8000/like', {
+        fetch('https://moodmoosic.duckdns.org/like', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ spotify_id: pendingId }),
@@ -102,14 +102,14 @@ function App() {
   // handles heart click — likes directly if connected, otherwise saves id and redirects to spotify login
   async function handleLike(spotify_id) {
       if (spotifyConnected) {
-          await fetch('http://localhost:8000/like', {
+          await fetch('https://moodmoosic.duckdns.org/like', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ spotify_id }),
           })
       } else {
           localStorage.setItem('pending_like', spotify_id)
-          window.location.href = 'http://localhost:8000/auth/spotify'
+          window.location.href = 'https://moodmoosic.duckdns.org/auth/spotify'
       }
   }
 
@@ -122,7 +122,7 @@ function App() {
         const controller = new AbortController()
         const timeout = setTimeout(() => controller.abort(), 120000)
         try {
-            const res = await fetch('http://localhost:8000/query', {
+            const res = await fetch('https://moodmoosic.duckdns.org/query', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ mood, top_k: 50, genre, language, artist }),
@@ -146,7 +146,7 @@ function App() {
     // sends a rating for a song to the backend and marks it as rated so buttons disable
     async function submitFeedback(songId, rating) {
         setRated(prev => new Set(prev).add(songId))
-        const res = await fetch('http://localhost:8000/feedback', {
+        const res = await fetch('https://moodmoosic.duckdns.org/feedback', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ request_id: requestId, song_id: songId, rating }),
@@ -156,7 +156,7 @@ function App() {
     async function nextTen(){
         const newOffset = offset + 10
         setCd(true)
-        const res = await fetch(`http://localhost:8000/page?request_id=${requestId}&offset=${newOffset}`, {
+        const res = await fetch(`https://moodmoosic.duckdns.org/page?request_id=${requestId}&offset=${newOffset}`, {
             method: "GET",
         })
         if (res.status === 410){
@@ -187,7 +187,7 @@ function App() {
                     <button
                         className="spotify-connect-btn"
                         onClick={async () => {
-                            await fetch('http://localhost:8000/auth/logout', { method: 'POST' })
+                            await fetch('https://moodmoosic.duckdns.org/auth/logout', { method: 'POST' })
                             setSpotifyConnected(false)
                             setSpotifyUser(null)
                             setSpotifyAvatar(null)
@@ -199,7 +199,7 @@ function App() {
             ) : (
                 <button
                     className="spotify-connect-btn"
-                    onClick={() => window.location.href = 'http://localhost:8000/auth/spotify'}
+                    onClick={() => window.location.href = 'https://moodmoosic.duckdns.org/auth/spotify'}
                 >
                     Connect Spotify
                 </button>
