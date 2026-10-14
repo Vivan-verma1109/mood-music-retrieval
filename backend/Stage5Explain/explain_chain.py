@@ -46,9 +46,13 @@ def generate_blurbs(mood_text, song_ids):
     formatted = _format_documents(documents)
 
     chain = _PROMPT | _get_llm()
-    response = chain.invoke({"mood": mood_text, "songs": formatted})
+    try:
+        response = chain.invoke({"mood": mood_text, "songs": formatted})
+    except Exception:
+        return {}
 
-    return _parse_blurbs(response.content)
+    blurbs = _parse_blurbs(response.content)
+    return {song_id: blurb for song_id, blurb in blurbs.items() if song_id in song_ids}
 
 
 # turns Haiku's raw "song_id: blurb" lines into an actual dict

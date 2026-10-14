@@ -1,6 +1,6 @@
 # backend/Stage5Explain/retriever.py
-# LangChain retriever that scores a page's songs against the mood query using their lyrics,
-# so the generation chain gets ranked, grounded lyric snippets instead of raw unordered lyrics.
+# LangChain retriever that, for each of a page's songs, picks the lyric snippet that best matches the mood query,
+# so the generation chain gets a grounded excerpt instead of the raw full lyrics.
 import numpy as np
 from langchain_core.retrievers import BaseRetriever
 from langchain_core.documents import Document
@@ -23,6 +23,8 @@ class SongLyricsRetriever(BaseRetriever):
         documents = []
         for song_id in self.song_ids:
             row = df.loc[int(song_id)]
+            if not isinstance(row['lyrics'], str):
+                continue  # no lyrics for this song, skip it
             chunks = chunk_lyrics(row['lyrics'])
             chunk_embs = model.encode(chunks, normalize_embeddings=True).astype('float32')
             sims = chunk_embs @ query_emb
