@@ -20,6 +20,8 @@ from backend.Stage0Data.years import years_cache
 from backend.auth.routes import router as auth_router
 from backend.auth.db import engine, Base
 from backend.auth import models  # registers models so create_all sees them
+from backend.Stage5Explain.explain_chain import generate_blurbs
+
 
 app = FastAPI()
 app.include_router(auth_router)
@@ -138,6 +140,15 @@ def next_page(request_id: str, offset: int):
     page = entry["pool"][offset: offset + 10]
     for r in page:
         r['image'] = (years_cache.get(r['song_id']) or {}).get('image')
+    if page:
+        mood_text = entry["songs"][page[0]['song_id']]["query"]
+        try:
+            blurbs = generate_blurbs(mood_text, [r['song_id'] for r in page])
+        except Exception:
+            blurbs = {}
+        for r in page:
+            r["blurb"] = blurbs.get(r['song_id'])
+
     return {"results": page}
 
 
